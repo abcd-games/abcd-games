@@ -1,4 +1,7 @@
+import {useNavigate} from "react-router-dom";
+
 export default function Header() {
+    const navigate = useNavigate();
     return (
         <header className="p-3 text-bg-dark">
             <div className="container">
@@ -21,8 +24,8 @@ export default function Header() {
                     </form>
 
                     <div className="text-end">
-                        <button type="button" className="btn btn-outline-light me-2">Login</button>
-                        <button type="button" className="btn btn-warning">Sign-up</button>
+                        <button type="button" onClick={() => navigate("/login")} className="btn btn-outline-light me-2">Login</button>
+                        <button type="button" onClick={() => navigate("/register")} className="btn btn-warning">Sign-up</button>
                     </div>
                 </div>
             </div>
