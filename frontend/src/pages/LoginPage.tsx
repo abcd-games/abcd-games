@@ -8,7 +8,7 @@ export default function LoginPage() {
                 <label htmlFor="floatingInput">Email address</label>
             </div>
             <div className="form-floating">
-                <input type="password" className="form-control" id="floatingPassword" placeholder="Password"/>
+                <input type="password" className="form-control my-2" id="floatingPassword" placeholder="Password"/>
                 <label htmlFor="floatingPassword">Password</label>
             </div>
             <div className="form-check text-start my-3">
