@@ -33,7 +33,7 @@ public class AppUserController {
         return appUserService.getUserById(id);
     }
 
-    @PostMapping(path = "/login", consumes = CONTENT_TYPE_JSON, produces = CONTENT_TYPE_JSON)
+    @PostMapping(path = "/login", produces = CONTENT_TYPE_JSON)
     public AppUserResponse login() {
         return appUserService.getLoggedInUser();
     }
