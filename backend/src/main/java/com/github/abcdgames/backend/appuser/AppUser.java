@@ -38,7 +38,7 @@ public class AppUser implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "role")
-    private AppUserRole appUserRole;
+    private AppUserRole role;
 
     static AppUser fromAppUserRequest(AppUserRequest appUserRequest) {
         PasswordService passwordService = new PasswordService();
@@ -46,13 +46,13 @@ public class AppUser implements UserDetails {
                 .username(appUserRequest.username())
                 .email(appUserRequest.email())
                 .password(passwordService.encodePassword(appUserRequest.password()))
-                .appUserRole(AppUserRole.USER)
+                .role(AppUserRole.USER)
                 .build();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + appUserRole.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -76,6 +76,6 @@ public class AppUser implements UserDetails {
     }
 
     public boolean isAdmin() {
-        return this.appUserRole.equals(AppUserRole.ADMIN);
+        return this.role.equals(AppUserRole.ADMIN);
     }
 }
