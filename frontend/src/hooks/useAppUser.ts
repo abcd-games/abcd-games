@@ -54,8 +54,8 @@ export default function useAppUser() {
         setLoadingAppUser(true);
         axios.post(`${BASE_URI}`, appUserRequest)
             .then(response => {
-                setAppUser(response.data);
-                toast.success("Welcome, " + response.data.username + "!");
+                toast.success("Welcome, " + response.data.username + "! You can now login.");
+                navigate("/login");
             })
             .catch(error => toast.error(error.response.data.message))
             .finally(() => setLoadingAppUser(false));
