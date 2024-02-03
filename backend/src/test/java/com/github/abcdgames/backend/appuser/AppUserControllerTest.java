@@ -86,6 +86,16 @@ class AppUserControllerTest {
     }
 
     @Test
+    void getAllUsers_expectStatus400_whenLoggedInAndNotAdmin() throws Exception {
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null, loggedInUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(principal);
+
+        mockMvc.perform(get("/api/users"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getAllUsers_expectStatus401_whenNotLoggedIn() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isUnauthorized());
