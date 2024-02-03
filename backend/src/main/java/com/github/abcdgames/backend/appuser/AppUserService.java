@@ -1,6 +1,7 @@
 package com.github.abcdgames.backend.appuser;
 
 import com.github.abcdgames.backend.utility.PasswordService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -104,5 +105,10 @@ public class AppUserService {
             return AppUserResponse.fromAppUser(appUser);
         }
         throw new IllegalStateException("User not found.");
+    }
+
+    public void logout(HttpSession session) {
+        SecurityContextHolder.clearContext();
+        session.invalidate();
     }
 }

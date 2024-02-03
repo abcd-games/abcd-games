@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import useAppUser from "./hooks/useAppUser.ts";
 
 export default function App() {
-    const {appUser, loadingAppUser, login} = useAppUser();
+    const {appUser, loadingAppUser, login, logout} = useAppUser();
 
     if (appUser === undefined) {
         return (
@@ -18,10 +18,11 @@ export default function App() {
     }
 
     return (
-        <Layout appUser={appUser}>
+        <Layout logout={logout} appUser={appUser}>
             <Routes>
                 <Route path="/" element={<h1>Hello, ABCD-Games!</h1>}/>
-                <Route path="/login" element={<LoginPage login={login} loadingAppUser={loadingAppUser}/>}/>
+                <Route path="/login"
+                       element={<LoginPage appUser={appUser} login={login} loadingAppUser={loadingAppUser}/>}/>
                 <Route path="/register" element={<RegisterPage/>}/>
             </Routes>
             <ToastContainer

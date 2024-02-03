@@ -4,6 +4,7 @@ import LoggedIn from "./LoggedIn.tsx";
 
 type HeaderProps = {
     appUser: AppUser | null;
+    logout: () => void;
 }
 
 export default function Header(props: Readonly<HeaderProps>) {
@@ -30,7 +31,7 @@ export default function Header(props: Readonly<HeaderProps>) {
                     </form>
 
                     {
-                        props.appUser ? <LoggedIn/> :
+                        props.appUser ? <LoggedIn logout={props.logout}/> :
                             (
                                 <div className="text-end">
                                     <button type="button" onClick={() => navigate("/login")}

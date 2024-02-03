@@ -1,13 +1,20 @@
 import {ChangeEvent, FormEvent, useState} from "react";
+import {AppUser} from "../types/AppUser.ts";
+import {Navigate} from "react-router-dom";
 
 type LoginPageProps = {
     login: (username: string, password: string) => void;
     loadingAppUser: boolean;
+    appUser: AppUser | null;
 };
 
 export default function LoginPage(props: Readonly<LoginPageProps>) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+
+    if (props.appUser) {
+        return <Navigate to={"/"}/>
+    }
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         const {name, value} = event.target;

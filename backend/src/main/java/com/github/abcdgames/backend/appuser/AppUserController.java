@@ -1,5 +1,6 @@
 package com.github.abcdgames.backend.appuser;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class AppUserController {
     @PostMapping(path = "/login", produces = CONTENT_TYPE_JSON)
     public AppUserResponse login() {
         return appUserService.getLoggedInUser();
+    }
+
+    @PostMapping(path = "/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpSession session) {
+        appUserService.logout(session);
     }
 
     @PostMapping(consumes = CONTENT_TYPE_JSON, produces = CONTENT_TYPE_JSON)
