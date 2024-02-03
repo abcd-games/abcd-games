@@ -1,23 +1,57 @@
-export default function LoginPage() {
+import {ChangeEvent, FormEvent, useState} from "react";
+
+type LoginPageProps = {
+    login: (username: string, password: string) => void;
+    loadingAppUser: boolean;
+};
+
+export default function LoginPage(props: Readonly<LoginPageProps>) {
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    function handleChange(event: ChangeEvent<HTMLInputElement>) {
+        const {name, value} = event.target;
+        if (name === "username") setUsername(value);
+        if (name === "password") setPassword(value);
+    }
+
+    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        props.login(username, password);
+        setPassword("");
+        setUsername("");
+    }
+
     return (
-        <form>
+        <form onSubmit={handleSubmit}>
             <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
             <div className="form-floating">
-                <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com"/>
-                <label htmlFor="floatingInput">Email address</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="floatingInput"
+                    autoComplete="username"
+                    name="username"
+                    value={username}
+                    onChange={handleChange}
+                />
+                <label htmlFor="floatingInput">Email address or Username</label>
             </div>
             <div className="form-floating">
-                <input type="password" className="form-control my-2" id="floatingPassword" placeholder="Password"/>
+                <input
+                    type="password"
+                    className="form-control my-2"
+                    id="floatingPassword"
+                    autoComplete="current-password"
+                    name="password"
+                    value={password}
+                    onChange={handleChange}
+                />
                 <label htmlFor="floatingPassword">Password</label>
             </div>
-            <div className="form-check text-start my-3">
-                <input className="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault"/>
-                <label className="form-check-label" htmlFor="flexCheckDefault">
-                    Remember me
-                </label>
-            </div>
-            <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+            <button className="btn btn-primary w-100 py-2" type="submit" disabled={props.loadingAppUser}>Sign in
+            </button>
         </form>
     );
 }

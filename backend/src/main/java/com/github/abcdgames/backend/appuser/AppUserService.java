@@ -97,7 +97,7 @@ public class AppUserService {
         return appUserRepository.existsAppUserByEmail(email);
     }
 
-    public AppUserResponse getLoggedInUser() {
+    AppUserResponse getLoggedInUser() {
         var loggedInUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (loggedInUser instanceof AppUser appUser) {
             log.debug(RETRIEVED_USER, appUser);

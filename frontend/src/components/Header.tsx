@@ -1,6 +1,12 @@
 import {useNavigate} from "react-router-dom";
+import {AppUser} from "../types/AppUser.ts";
+import LoggedIn from "./LoggedIn.tsx";
 
-export default function Header() {
+type HeaderProps = {
+    appUser: AppUser | null;
+}
+
+export default function Header(props: Readonly<HeaderProps>) {
     const navigate = useNavigate();
     return (
         <header className="p-3 text-bg-dark">
@@ -23,10 +29,19 @@ export default function Header() {
                                placeholder="Search..." aria-label="Search"/>
                     </form>
 
-                    <div className="text-end">
-                        <button type="button" onClick={() => navigate("/login")} className="btn btn-outline-light me-2">Login</button>
-                        <button type="button" onClick={() => navigate("/register")} className="btn btn-warning">Sign-up</button>
-                    </div>
+                    {
+                        props.appUser ? <LoggedIn/> :
+                            (
+                                <div className="text-end">
+                                    <button type="button" onClick={() => navigate("/login")}
+                                            className="btn btn-outline-light me-2">Login
+                                    </button>
+                                    <button type="button" onClick={() => navigate("/register")}
+                                            className="btn btn-warning">Sign-up
+                                    </button>
+                                </div>
+                            )
+                    }
                 </div>
             </div>
         </header>
