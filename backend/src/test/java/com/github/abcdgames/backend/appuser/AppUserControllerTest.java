@@ -217,4 +217,32 @@ class AppUserControllerTest {
         mockMvc.perform(delete("/api/users/1"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void deleteUser_expectStatus400_whenLoggedInAndUserWantsToDeleteOtherUser() throws Exception {
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
+                loggedInUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(principal);
+        appUserRepository.save(someUser);
+        appUserRepository.save(loggedInUser);
+
+        mockMvc.perform(delete("/api/users/2"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteUser_expectStatus200_whenLoggedInAndAdminWantsToDeleteOtherUser() throws Exception {
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
+                loggedInUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(principal);
+        appUserRepository.save(someUser);
+        appUserRepository.save(loggedInUser);
+
+        mockMvc.perform(delete("/api/users/2"))
+                .andExpect(status().isOk());
+    }
 }
