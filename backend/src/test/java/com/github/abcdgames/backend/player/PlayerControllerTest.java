@@ -1,21 +1,19 @@
 package com.github.abcdgames.backend.player;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.util.NoSuchElementException;
-
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,6 +51,7 @@ class PlayerControllerTest {
     @Test
     @DirtiesContext
     @DisplayName("GET: Should return correct player by id.")
+    @WithMockUser(roles = "ADMIN")
     void getPlayerByIdReturnsCorrectPlayer() throws Exception {
         Player playerToSave = Player.builder()
                 .displayName("John Doe")
@@ -71,6 +70,7 @@ class PlayerControllerTest {
 
     @Test
     @DisplayName("GET: Should throw exception when player does not exist.")
+    @WithMockUser(roles = "ADMIN")
     void getPlayerByIdThrowsExceptionWhenPlayerDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/players/2"))
                 .andExpect(status().isNotFound());
