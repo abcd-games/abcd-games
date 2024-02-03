@@ -4,14 +4,14 @@ public record AppUserResponse(
         Long id,
         String username,
         String email,
-        AppUserRole appUserRole
+        AppUserRole role
 ) {
     static AppUserResponse fromAppUser(AppUser appUser) {
         return new AppUserResponse(
                 appUser.getId(),
                 appUser.getUsername(),
                 appUser.getEmail(),
-                appUser.getAppUserRole()
+                appUser.getRole()
         );
     }
 }
