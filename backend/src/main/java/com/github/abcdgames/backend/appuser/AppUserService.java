@@ -98,8 +98,8 @@ public class AppUserService {
     }
 
     AppUserResponse getLoggedInUser() {
-        var loggedInUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (loggedInUser instanceof AppUser appUser) {
+        var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof AppUser appUser) {
             log.debug(RETRIEVED_USER, appUser);
             return AppUserResponse.fromAppUser(appUser);
         }
