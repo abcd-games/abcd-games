@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -254,5 +255,34 @@ class AppUserControllerTest {
 
         mockMvc.perform(delete("/api/users/2"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void logout_expectStatus204_whenLoggedIn() throws Exception {
+        mockMvc.perform(post("/api/users/logout"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void logout_expectStatus401_whenNotLoggedIn() throws Exception {
+        mockMvc.perform(post("/api/users/logout"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void login_expectStatus200AndAppUserResponse_whenLoggedIn() throws Exception {
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
+                loggedInUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(principal);
+        appUserRepository.save(loggedInUser);
+
+        AppUserResponse appUserResponse = AppUserResponse.fromAppUser(loggedInUser);
+        String appUserResponseJson = objectMapper.writeValueAsString(appUserResponse);
+
+        mockMvc.perform(post("/api/users/login"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(appUserResponseJson));
     }
 }
