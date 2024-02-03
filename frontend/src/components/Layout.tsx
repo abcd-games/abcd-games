@@ -6,12 +6,13 @@ import {AppUser} from "../types/AppUser.ts";
 type LayoutProps = {
     children: ReactNode;
     appUser: AppUser | null;
+    logout: () => void;
 }
 
 export default function Layout(props: Readonly<LayoutProps>) {
     return (
         <>
-            <Header appUser={props.appUser}/>
+            <Header logout={props.logout} appUser={props.appUser}/>
             <main className="container">
                 {props.children}
             </main>

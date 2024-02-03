@@ -1,4 +1,7 @@
-export default function LoggedIn() {
+type LoggedInProps = {
+    logout: () => void,
+}
+export default function LoggedIn(props: Readonly<LoggedInProps>) {
     return (
         <div className="dropdown text-end">
             <a href="/" className="d-block link-body-emphasis text-decoration-none dropdown-toggle"
@@ -10,7 +13,9 @@ export default function LoggedIn() {
                 <li>
                     <hr className="dropdown-divider"/>
                 </li>
-                <li><a href="/" className="dropdown-item">Sign out</a></li>
+                <li>
+                    <button onClick={props.logout} className="dropdown-item">Sign out</button>
+                </li>
             </ul>
         </div>
     );

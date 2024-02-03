@@ -38,6 +38,18 @@ export default function useAppUser() {
             .finally(() => setLoadingAppUser(false));
     }
 
+    function logout() {
+        setLoadingAppUser(true);
+        axios.post(`${BASE_URI}/logout`)
+            .then(() => {
+                setAppUser(null);
+                navigate("/login");
+                toast.success("You have been logged out!");
+            })
+            .catch(error => toast.error(error.response.data.message))
+            .finally(() => setLoadingAppUser(false));
+    }
+
     function register(appUserRequest: AppUserRequest) {
         setLoadingAppUser(true);
         axios.post(`${BASE_URI}`, appUserRequest)
@@ -53,5 +65,5 @@ export default function useAppUser() {
         fetchMe();
     }, []);
 
-    return {appUser, loadingAppUser, login, register};
+    return {appUser, loadingAppUser, login, register, logout};
 }
