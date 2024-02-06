@@ -1,5 +1,6 @@
 package com.github.abcdgames.backend.games.battleships.model;
 
+import io.hypersistence.utils.hibernate.type.array.EnumArrayType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,10 +20,14 @@ public class BattleshipBoard {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Type(value = EnumArrayType.class)
+    @Type(value = EnumArrayType.class,
+            parameters = @org.hibernate.annotations.Parameter(
+                    name = "sql_array_type",
+                    value = "battleship_field"
+            ))
     @Column(
             name = "fields",
-            columnDefinition = "BATTLESHIP_FIELD[][]"
+            columnDefinition = "battleship_field[][]"
     )
     private BattleshipField[][] fields;
 }

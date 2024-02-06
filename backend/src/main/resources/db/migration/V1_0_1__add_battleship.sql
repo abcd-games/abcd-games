@@ -1,4 +1,4 @@
-CREATE TYPE BATTLESHIP_FIELD
+CREATE TYPE battleship_field
 AS ENUM (
     'EMPTY',
     'SHIP',
@@ -9,7 +9,7 @@ AS ENUM (
 CREATE TABLE IF NOT EXISTS battleship_board
 (
     id     VARCHAR(200) not null,
-    fields BATTLESHIP_FIELD[][],
+    fields battleship_field[][],
     primary key (id)
 );
 
