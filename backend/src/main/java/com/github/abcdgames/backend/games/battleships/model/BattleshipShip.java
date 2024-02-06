@@ -1,6 +1,6 @@
 package com.github.abcdgames.backend.games.battleships.model;
 
-public enum BattleshipShips {
+public enum BattleshipShip {
     CARRIER(5),
     BATTLESHIP(4),
     CRUISER(3),
@@ -9,7 +9,7 @@ public enum BattleshipShips {
 
     private final int length;
 
-    BattleshipShips(int length) {
+    BattleshipShip(int length) {
         this.length = length;
     }
 }

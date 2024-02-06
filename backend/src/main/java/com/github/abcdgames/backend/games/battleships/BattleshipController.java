@@ -1,5 +1,7 @@
-package com.github.abcdgames.backend.games.battleships.model;
+package com.github.abcdgames.backend.games.battleships;
 
+import com.github.abcdgames.backend.games.battleships.model.Battleship;
+import com.github.abcdgames.backend.games.battleships.model.CreateBattleshipRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,15 +13,15 @@ import java.util.List;
 public class BattleshipController {
 
 
-    private final BattleshipRepository battleshipRepository;
+    private final BattleShipService battleShipService;
 
     @GetMapping
     List<Battleship> getAllBattleships() {
-        return battleshipRepository.findAll();
+        return battleShipService.findAll();
     }
 
     @PostMapping
     Battleship createBattleship(@RequestBody Battleship battleship) {
-        return battleshipRepository.save(battleship);
+        return battleShipService.save(battleship);
     }
 }

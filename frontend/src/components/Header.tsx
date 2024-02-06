@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {AppUser} from "../types/AppUser.ts";
 import LoggedIn from "./LoggedIn.tsx";
 
@@ -20,7 +20,7 @@ export default function Header(props: Readonly<HeaderProps>) {
 
                     <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                         <li><a href="/home" className="nav-link px-2 text-white disabled">Home</a></li>
-                        <li><a href="/games" className="nav-link px-2 text-white disabled">Games</a></li>
+                        <li><NavLink to="/games/battleships" className="nav-link px-2 text-white">Games</NavLink></li>
                         <li><a href="/leaderboard" className="nav-link px-2 text-white disabled">Leaderboard</a></li>
                     </ul>
 

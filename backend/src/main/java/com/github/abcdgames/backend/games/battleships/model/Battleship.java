@@ -3,11 +3,8 @@ package com.github.abcdgames.backend.games.battleships.model;
 import com.github.abcdgames.backend.player.Player;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
-import org.springframework.data.repository.cdi.Eager;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -44,7 +41,7 @@ public class Battleship {
 
     @Enumerated
     @Column(name = "available_ships_per_player")
-    private List<BattleshipShips> availableShipsPerPlayer;
+    private List<BattleshipShip> availableShipsPerPlayer;
 
     @ManyToOne
     private Player currentTurn;

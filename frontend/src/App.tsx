@@ -5,6 +5,7 @@ import RegisterPage from "./pages/RegisterPage.tsx";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useAppUser from "./hooks/useAppUser.ts";
+import BattleshipsPage from "./pages/BattleshipsPage.tsx";
 
 export default function App() {
     const {appUser, loadingAppUser, login, logout, register} = useAppUser();
@@ -26,6 +27,10 @@ export default function App() {
                 <Route path="/register"
                        element={<RegisterPage appUser={appUser} loadingAppUser={loadingAppUser}
                                               registerUser={register}/>}/>
+                <Route path="/games">
+                    <Route path="battleships" element={<BattleshipsPage/>}/>
+
+                </Route>
             </Routes>
             <ToastContainer
                 position="top-right"
