@@ -3,7 +3,7 @@ import {ChangeEvent, FormEvent, useState} from "react";
 import {Navigate} from "react-router-dom";
 
 type RegisterPageProps = {
-    registerUser: (appUserRequest: AppUserRequest) => void,
+    registerUser: (appUserRequest: AppUserRequest) => Promise<void>,
     loadingAppUser: boolean,
     appUser: AppUser | null,
 }
@@ -29,12 +29,14 @@ export default function RegisterPage(props: Readonly<RegisterPageProps>) {
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        props.registerUser(appUserRequest);
-        setAppUserRequest({
-            username: "",
-            email: "",
-            password: "",
-        });
+        props.registerUser(appUserRequest)
+            .then(() => {
+                setAppUserRequest({
+                    username: "",
+                    email: "",
+                    password: "",
+                });
+            });
     }
 
     return (
@@ -44,6 +46,8 @@ export default function RegisterPage(props: Readonly<RegisterPageProps>) {
             <div className="form-floating">
                 <input
                     type="text"
+                    minLength={3}
+                    maxLength={20}
                     className="form-control"
                     id="floatingInput"
                     placeholder="Username"
