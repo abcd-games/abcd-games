@@ -87,13 +87,13 @@ class AppUserControllerTest {
     }
 
     @Test
-    void getAllUsers_expectStatus400_whenLoggedInAndNotAdmin() throws Exception {
+    void getAllUsers_expectStatus403_whenLoggedInAndNotAdmin() throws Exception {
         AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null, loggedInUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(principal);
 
         mockMvc.perform(get("/api/users"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -118,7 +118,7 @@ class AppUserControllerTest {
     }
 
     @Test
-    void getUserById_expectStatus401_whenLoggedInAndTryingToAccessOtherCredentials() throws Exception {
+    void getUserById_expectStatus403_whenLoggedInAndTryingToAccessOtherCredentials() throws Exception {
         AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
         AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
@@ -128,7 +128,7 @@ class AppUserControllerTest {
         appUserRepository.save(loggedInUser);
 
         mockMvc.perform(get("/api/users/2"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -199,7 +199,7 @@ class AppUserControllerTest {
     }
 
     @Test
-    void updateUser_expectStatus400_whenUserLoggedInAndTryingToEditOtherCredentials() throws Exception {
+    void updateUser_expectStatus403_whenUserLoggedInAndTryingToEditOtherCredentials() throws Exception {
         AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
         AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
@@ -214,7 +214,7 @@ class AppUserControllerTest {
         mockMvc.perform(put("/api/users/2")
                         .contentType("application/json")
                         .content(appUserRequestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -230,7 +230,7 @@ class AppUserControllerTest {
     }
 
     @Test
-    void deleteUser_expectStatus400_whenLoggedInAndUserWantsToDeleteOtherUser() throws Exception {
+    void deleteUser_expectStatus403_whenLoggedInAndUserWantsToDeleteOtherUser() throws Exception {
         AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
         AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
@@ -240,7 +240,7 @@ class AppUserControllerTest {
         appUserRepository.save(loggedInUser);
 
         mockMvc.perform(delete("/api/users/2"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test

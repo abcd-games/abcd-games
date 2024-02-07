@@ -6,23 +6,23 @@ import {useNavigate} from "react-router-dom";
 
 export default function useAppUser() {
     const [appUser, setAppUser] = useState<AppUser | null | undefined>(undefined);
-    const [loadingAppUser, setLoadingAppUser] = useState<boolean>(true);
+    const [isLoadingAppUser, setIsLoadingAppUser] = useState<boolean>(true);
     const BASE_URI: string = "/api/users";
     const navigate = useNavigate();
 
     function fetchMe() {
-        setLoadingAppUser(true);
+        setIsLoadingAppUser(true);
         axios.get(`${BASE_URI}/me`)
             .then(response => setAppUser(response.data))
             .catch(error => {
                 setAppUser(null);
                 console.log(error);
             })
-            .finally(() => setLoadingAppUser(false));
+            .finally(() => setIsLoadingAppUser(false));
     }
 
     function login(username: string, password: string) {
-        setLoadingAppUser(true);
+        setIsLoadingAppUser(true);
         axios.post(`${BASE_URI}/login`, {}, {
             auth: {
                 username: username,
@@ -35,11 +35,11 @@ export default function useAppUser() {
                 toast.success("Welcome back, " + response.data.username + "!");
             })
             .catch(error => toast.error(error.response.data.message))
-            .finally(() => setLoadingAppUser(false));
+            .finally(() => setIsLoadingAppUser(false));
     }
 
     function logout() {
-        setLoadingAppUser(true);
+        setIsLoadingAppUser(true);
         axios.post(`${BASE_URI}/logout`)
             .then(() => {
                 setAppUser(null);
@@ -47,23 +47,26 @@ export default function useAppUser() {
                 toast.success("You have been logged out!");
             })
             .catch(error => toast.error(error.response.data.message))
-            .finally(() => setLoadingAppUser(false));
+            .finally(() => setIsLoadingAppUser(false));
     }
 
     function register(appUserRequest: AppUserRequest) {
-        setLoadingAppUser(true);
-        axios.post(`${BASE_URI}`, appUserRequest)
+        setIsLoadingAppUser(true);
+        return axios.post(`${BASE_URI}`, appUserRequest)
             .then(response => {
                 toast.success("Welcome, " + response.data.username + "! You can now login.");
                 navigate("/login");
             })
-            .catch(error => toast.error(error.response.data.message))
-            .finally(() => setLoadingAppUser(false));
+            .catch(error => {
+                toast.error(error.response.data.message);
+                throw error;
+            })
+            .finally(() => setIsLoadingAppUser(false));
     }
 
     useEffect(() => {
         fetchMe();
     }, []);
 
-    return {appUser, loadingAppUser, login, register, logout};
+    return {appUser, loadingAppUser: isLoadingAppUser, login, register, logout};
 }

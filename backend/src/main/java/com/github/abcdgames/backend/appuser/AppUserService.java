@@ -4,10 +4,13 @@ import com.github.abcdgames.backend.utility.PasswordService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -17,30 +20,23 @@ public class AppUserService {
     private final AppUserRepository appUserRepository;
     private final PasswordService passwordService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     List<AppUserResponse> getAllUsers() {
-        var loggedInUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (loggedInUser instanceof AppUser appUser && (appUser.isAdmin())) {
-            return appUserRepository
-                    .findAll()
-                    .stream()
-                    .map(currentUser -> {
-                        log.debug(RETRIEVED_USER, currentUser);
-                        return AppUserResponse.fromAppUser(currentUser);
-                    })
-                    .toList();
-
-        }
-        throw new IllegalStateException("You can only retrieve all users if you are an admin.");
+        return appUserRepository
+                .findAll()
+                .stream()
+                .map(AppUserResponse::fromAppUser)
+                .toList();
     }
 
     AppUserResponse getUserById(Long id) {
         var loggedInUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (loggedInUser instanceof AppUser appUser && appUser.getId().equals(id)) {
             AppUser retrievedUser = findUserById(id);
-            log.debug(RETRIEVED_USER, retrievedUser);
+            log.debug(RETRIEVED_USER, retrievedUser.getId());
             return AppUserResponse.fromAppUser(retrievedUser);
         }
-        throw new IllegalStateException("You can only retrieve your own user.");
+        throw new AccessDeniedException("You can only retrieve your own user.");
     }
 
     AppUserResponse updateUser(Long id, AppUserRequest appUserRequest) {
@@ -57,7 +53,7 @@ public class AppUserService {
             log.debug("Updated user: {}", savedAppUser);
             return AppUserResponse.fromAppUser(savedAppUser);
         }
-        throw new IllegalStateException("You can only update your own user.");
+        throw new AccessDeniedException("You can only update your own user.");
     }
 
     AppUserResponse createUser(AppUserRequest appUserRequest) {
@@ -77,7 +73,7 @@ public class AppUserService {
             appUserRepository.deleteById(id);
             return "User with id " + id + " deleted.";
         }
-        throw new IllegalStateException("You can only delete your own user or if you are an admin.");
+        throw new AccessDeniedException("You can only delete your own user or if you are an admin.");
     }
 
     private boolean checkIfAppUserExists(AppUserRequest appUserRequest) {
@@ -87,7 +83,7 @@ public class AppUserService {
     private AppUser findUserById(Long id) {
         return appUserRepository
                 .findById(id)
-                .orElseThrow(() -> new IllegalStateException("User with id " + id + " not found."));
+                .orElseThrow(() -> new NoSuchElementException("User with id " + id + " not found."));
     }
 
     private boolean existsAppUserByUsername(String username) {
@@ -101,7 +97,7 @@ public class AppUserService {
     AppUserResponse getLoggedInUser() {
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof AppUser appUser) {
-            log.debug(RETRIEVED_USER, appUser);
+            log.debug(RETRIEVED_USER, appUser.getId());
             return AppUserResponse.fromAppUser(appUser);
         }
         throw new IllegalStateException("User not found.");
