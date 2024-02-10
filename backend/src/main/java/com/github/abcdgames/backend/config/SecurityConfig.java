@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/games/battleships").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/games/battleships/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/games/battleships").authenticated()
 
                         .requestMatchers(RegexRequestMatcher.regexMatcher("^(?!/api).*$")).permitAll()

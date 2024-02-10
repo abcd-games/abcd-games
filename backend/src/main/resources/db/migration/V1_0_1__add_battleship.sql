@@ -6,20 +6,13 @@ AS ENUM (
     'HIT'
     );
 
-CREATE TABLE IF NOT EXISTS battleship_board
-(
-    id     VARCHAR(200) not null,
-    fields battleship_field[][],
-    primary key (id)
-);
-
 CREATE TABLE IF NOT EXISTS battleship
 (
     id                         VARCHAR(200) not null,
     required_players           INT,
     max_players                INT,
-    board_player1_id           VARCHAR(200) REFERENCES battleship_board,
-    board_player2_id           VARCHAR(200) REFERENCES battleship_board,
+    board_player1              battleship_field[][],
+    board_player2              battleship_field[][],
     available_ships_per_player INT[],
     current_turn_id            VARCHAR(200) REFERENCES player,
     winner_id                  VARCHAR(200) REFERENCES player,
