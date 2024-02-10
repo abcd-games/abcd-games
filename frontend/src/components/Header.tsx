@@ -1,14 +1,14 @@
-import {useNavigate} from "react-router-dom";
 import {AppUser} from "../types/AppUser.ts";
 import LoggedIn from "./LoggedIn.tsx";
+import {Link} from "react-router-dom";
 
 type HeaderProps = {
     appUser: AppUser | null;
     logout: () => void;
+    login: () => void;
 }
 
 export default function Header(props: Readonly<HeaderProps>) {
-    const navigate = useNavigate();
     return (
         <header className="p-3 text-bg-dark">
             <div className="container">
@@ -19,7 +19,7 @@ export default function Header(props: Readonly<HeaderProps>) {
                     </a>
 
                     <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                        <li><a href="/home" className="nav-link px-2 text-white disabled">Home</a></li>
+                        <li><Link to="/" className="nav-link px-2 text-white disabled">Home</Link></li>
                         <li><a href="/games" className="nav-link px-2 text-white disabled">Games</a></li>
                         <li><a href="/leaderboard" className="nav-link px-2 text-white disabled">Leaderboard</a></li>
                     </ul>
@@ -31,13 +31,13 @@ export default function Header(props: Readonly<HeaderProps>) {
                     </form>
 
                     {
-                        props.appUser ? <LoggedIn logout={props.logout}/> :
+                        props.appUser ? <LoggedIn appUser={props.appUser} logout={props.logout}/> :
                             (
                                 <div className="text-end">
-                                    <button type="button" onClick={() => navigate("/login")}
+                                    <button type="button" onClick={props.login}
                                             className="btn btn-outline-light me-2">Login
                                     </button>
-                                    <button type="button" onClick={() => navigate("/register")}
+                                    <button type="button" onClick={props.login}
                                             className="btn btn-warning">Sign-up
                                     </button>
                                 </div>

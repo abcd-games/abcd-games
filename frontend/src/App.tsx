@@ -1,13 +1,13 @@
 import Layout from "./components/Layout.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import {Route, Routes} from "react-router-dom";
-import RegisterPage from "./pages/RegisterPage.tsx";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useAppUser from "./hooks/useAppUser.ts";
+import MyProfilePage from "./pages/MyProfilePage.tsx";
 
 export default function App() {
-    const {appUser, loadingAppUser, login, logout, register} = useAppUser();
+    const {appUser, loadingAppUser, login, logout} = useAppUser();
 
     if (appUser === undefined) {
         return (
@@ -18,14 +18,15 @@ export default function App() {
     }
 
     return (
-        <Layout logout={logout} appUser={appUser}>
+        <Layout login={login} logout={logout} appUser={appUser}>
             <Routes>
                 <Route path="/" element={<h1>Hello, ABCD-Games!</h1>}/>
                 <Route path="/login"
                        element={<LoginPage appUser={appUser} login={login} loadingAppUser={loadingAppUser}/>}/>
-                <Route path="/register"
-                       element={<RegisterPage appUser={appUser} loadingAppUser={loadingAppUser}
-                                              registerUser={register}/>}/>
+                {
+                    appUser &&
+                    <Route path="/my-profile" element={<MyProfilePage appUser={appUser}/>}/>
+                }
             </Routes>
             <ToastContainer
                 position="top-right"

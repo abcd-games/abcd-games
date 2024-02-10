@@ -8,9 +8,22 @@ CREATE TABLE IF NOT EXISTS player
 CREATE TABLE IF NOT EXISTS app_user
 (
     app_user_id BIGSERIAL NOT NULL,
-    username    VARCHAR(20) UNIQUE NOT NULL,
-    password    VARCHAR(100) NOT NULL,
-    email       VARCHAR(255) UNIQUE NOT NULL,
-    role        VARCHAR(255) NOT NULL,
+    username
+    VARCHAR
+(
+    20
+),
+    email VARCHAR
+(
+    255
+),
+    avatar_url VARCHAR
+(
+    255
+),
+    role VARCHAR
+(
+    255
+),
     PRIMARY KEY (app_user_id)
 );

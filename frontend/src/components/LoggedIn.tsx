@@ -1,15 +1,19 @@
+import {AppUser} from "../types/AppUser.ts";
+import {Link} from "react-router-dom";
+
 type LoggedInProps = {
     logout: () => void,
+    appUser: AppUser,
 }
 export default function LoggedIn(props: Readonly<LoggedInProps>) {
     return (
         <div className="dropdown text-end">
             <a href="/" className="d-block link-body-emphasis text-decoration-none dropdown-toggle"
                data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" className="rounded-circle"/>
+                <img src={props.appUser.avatarUrl} alt="mdo" width="32" height="32" className="rounded-circle"/>
             </a>
             <ul className="dropdown-menu text-small">
-                <li><a href="/" className="dropdown-item">Profile</a></li>
+                <li><Link to="/my-profile" className="dropdown-item">Profile</Link></li>
                 <li>
                     <hr className="dropdown-divider"/>
                 </li>

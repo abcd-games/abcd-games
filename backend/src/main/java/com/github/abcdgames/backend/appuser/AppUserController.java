@@ -1,64 +1,35 @@
 package com.github.abcdgames.backend.appuser;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-@RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "/api/users")
-@Slf4j
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AppUserController {
+    private final AppUserRepository userRepository;
 
-    private final AppUserService appUserService;
-
-    @GetMapping(produces = APPLICATION_JSON_VALUE, path = "/me")
-    public AppUserResponse getMe() {
-        return appUserService.getLoggedInUser();
+    @GetMapping("/me")
+    public AppUser getMe(@AuthenticationPrincipal OidcUser principal) {
+        if (principal != null) {
+            return userRepository
+                    .findAppUserByEmail(principal.getEmail())
+                    .orElseGet(() -> userRepository.save(
+                            AppUser
+                                    .builder()
+                                    .username(principal.getNickName())
+                                    .email(principal.getEmail())
+                                    .avatarUrl(principal.getPicture())
+                                    .role(AppUserRole.USER)
+                                    .build())
+                    );
+        }
+        throw new OAuth2AuthorizationException(new OAuth2Error("invalid_token", "The token is invalid", null));
     }
-
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<AppUserResponse> getAllUsers() {
-        return appUserService.getAllUsers();
-    }
-
-    @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
-    public AppUserResponse getUserById(@PathVariable Long id) {
-        return appUserService.getUserById(id);
-    }
-
-    @PostMapping(path = "/login", produces = APPLICATION_JSON_VALUE)
-    public AppUserResponse login() {
-        return appUserService.getLoggedInUser();
-    }
-
-    @PostMapping(path = "/logout")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(HttpSession session) {
-        appUserService.logout(session);
-    }
-
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public AppUserResponse createUser(@Validated @RequestBody AppUserRequest appUserRequest) {
-        return appUserService.createUser(appUserRequest);
-    }
-
-    @PutMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public AppUserResponse updateUser(@PathVariable Long id, @Validated @RequestBody AppUserRequest appUserRequest) {
-        return appUserService.updateUser(id, appUserRequest);
-    }
-
-    @DeleteMapping(path = "/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        return appUserService.deleteUser(id);
-    }
-
 }
