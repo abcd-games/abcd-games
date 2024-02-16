@@ -1,7 +1,10 @@
 package com.github.abcdgames.backend.games.battleships;
 
+import com.github.abcdgames.backend.appuser.AppUser;
 import com.github.abcdgames.backend.games.battleships.model.Battleship;
+import com.github.abcdgames.backend.games.battleships.model.CreateBattleshipRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +28,7 @@ public class BattleshipController {
     }
 
     @PostMapping
-    Battleship createBattleship(@RequestBody Battleship battleship) {
-        return battleShipService.save(battleship);
+    Battleship createBattleship(@AuthenticationPrincipal AppUser user, @RequestBody CreateBattleshipRequest battleshipRequest) {
+        return battleShipService.createGame(battleshipRequest, user);
     }
 }

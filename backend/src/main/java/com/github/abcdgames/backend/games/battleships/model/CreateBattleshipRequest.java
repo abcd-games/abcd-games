@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreateBattleshipRequest {
-
-    private BattleshipBoard boardPlayer1;
+    private BattleshipField[][] boardPlayer1;
 }
