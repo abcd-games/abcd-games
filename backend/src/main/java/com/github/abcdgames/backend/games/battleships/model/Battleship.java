@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 @Entity(name = "battleship")
+@With
 public class Battleship {
     @Id
     @Column(name = "id", nullable = false)

@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/games/battleships").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/games/battleships/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/games/battleships").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/games/battleships/*/turn").authenticated()
 
                         .requestMatchers(RegexRequestMatcher.regexMatcher("^(?!/api).*$")).permitAll()
                         .anyRequest().hasRole("ADMIN"))

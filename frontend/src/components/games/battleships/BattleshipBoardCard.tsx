@@ -32,7 +32,7 @@ export default function BattleshipBoardCard(props: Props) {
                                                       field={field}
                                                       position={{x: columnIndex, y: rowIndex}}
                                                       onShipSelect={() => {}}
-                                                      onClick={() => {}}/>
+                                                      onClick={props.onFieldClick}/>
                     ))}
                 </div>
             ))}

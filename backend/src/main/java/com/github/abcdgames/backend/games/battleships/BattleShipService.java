@@ -1,9 +1,7 @@
 package com.github.abcdgames.backend.games.battleships;
 
 import com.github.abcdgames.backend.appuser.AppUser;
-import com.github.abcdgames.backend.games.battleships.model.Battleship;
-import com.github.abcdgames.backend.games.battleships.model.BattleshipConfig;
-import com.github.abcdgames.backend.games.battleships.model.CreateBattleshipRequest;
+import com.github.abcdgames.backend.games.battleships.model.*;
 import com.github.abcdgames.backend.player.Player;
 import com.github.abcdgames.backend.player.PlayerService;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +39,33 @@ public class BattleShipService {
 
     public Battleship findById(String id) {
         return battleshipRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Battleship with id: " + id + " not found."));
+    }
+
+    public Battleship makeTurn(BattleshipTurnRequest battleshipTurnRequest, String id, AppUser user) {
+        Battleship battleship = findById(id);
+        Player player = playerService.getPlayerById(String.valueOf(user.getId()));
+
+        if (battleship.getCurrentTurn().getId().equals(player.getId())) {
+
+            BattleshipField[][] board = battleship.getPlayers().indexOf(battleship.getCurrentTurn()) == 0
+                    ? battleship.getBoardPlayer2()
+                    : battleship.getBoardPlayer1();
+
+            BattleshipField target = board[battleshipTurnRequest.y()][battleshipTurnRequest.x()];
+
+            if (target == BattleshipField.HIT || target == BattleshipField.MISS) {
+                throw new IllegalArgumentException("Field already targeted.");
+            }
+
+            if (target == BattleshipField.SHIP) {
+                board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.HIT;
+            } else {
+                board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.MISS;
+            }
+
+            return battleshipRepository.save(battleship);
+        } else {
+            throw new IllegalArgumentException("It's not your turn.");
+        }
     }
 }

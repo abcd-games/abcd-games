@@ -1,4 +1,3 @@
-
 import {useEffect, useState} from "react";
 import {Battleship, BattleshipShip} from "../../../types/Battleship.ts";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
@@ -35,12 +34,25 @@ export default function BattleshipGameCard() {
         });
     }
 
+    const makeTurn = (position: { x: number, y: number }) => {
+        axios.post('/api/games/battleships/' + id + '/turn', position)
+            .then(response => setGame(response.data))
+    }
+
     return (
         <div>
+            <p>My Board</p>
             <BattleshipBoardCard board={game.boardPlayer1}
                                  setup={false}
                                  onShipSelect={onShipSelect}
-                                 onFieldClick={() => {}}/>
+                                 onFieldClick={() => {
+                                 }}/>
+
+            <p>Enemy Board</p>
+            <BattleshipBoardCard board={game.boardPlayer2}
+                                 setup={false}
+                                 onShipSelect={onShipSelect}
+                                 onFieldClick={makeTurn}/>
         </div>
     );
 }
