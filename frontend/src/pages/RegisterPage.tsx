@@ -81,7 +81,7 @@ export default function RegisterPage(props: Readonly<RegisterPageProps>) {
                 />
                 <label htmlFor="floatingPassword">Password</label>
             </div>
-            <button className="btn btn-primary w-100 py-2 my-2" type="submit" disabled={props.loadingAppUser}>Register
+            <button className="btn btn-primary w-100 py-2 my-2" type="submit">Register
                 now
             </button>
         </form>

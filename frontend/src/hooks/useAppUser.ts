@@ -11,14 +11,12 @@ export default function useAppUser() {
     const navigate = useNavigate();
 
     function fetchMe() {
-        setIsLoadingAppUser(true);
         axios.get(`${BASE_URI}/me`)
             .then(response => setAppUser(response.data))
             .catch(error => {
                 setAppUser(null);
                 console.log(error);
-            })
-            .finally(() => setIsLoadingAppUser(false));
+            });
     }
 
     function login(username: string, password: string) {
@@ -50,7 +48,7 @@ export default function useAppUser() {
             .finally(() => setIsLoadingAppUser(false));
     }
 
-    function register(appUserRequest: AppUserRequest) {
+    async function register(appUserRequest: AppUserRequest) {
         setIsLoadingAppUser(true);
         return axios.post(`${BASE_URI}`, appUserRequest)
             .then(response => {
@@ -66,6 +64,9 @@ export default function useAppUser() {
 
     useEffect(() => {
         fetchMe();
+        return () => {
+            setInterval(fetchMe, 30000);
+        }
     }, []);
 
     return {appUser, loadingAppUser: isLoadingAppUser, login, register, logout};
