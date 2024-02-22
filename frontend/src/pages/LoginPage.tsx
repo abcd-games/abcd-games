@@ -57,7 +57,7 @@ export default function LoginPage(props: Readonly<LoginPageProps>) {
                 />
                 <label htmlFor="floatingPassword">Password</label>
             </div>
-            <button className="btn btn-primary w-100 py-2" type="submit" disabled={props.loadingAppUser}>Sign in
+            <button className="btn btn-primary w-100 py-2" type="submit">Sign in
             </button>
         </form>
     );
