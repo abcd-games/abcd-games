@@ -1,4 +1,4 @@
-import {BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
 
 type Props = {
     field: BattleshipField;

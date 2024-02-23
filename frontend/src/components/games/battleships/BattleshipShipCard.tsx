@@ -1,4 +1,4 @@
-import {BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipShip} from "../../../types/BattleshipListDto.ts";
 import {useDrag} from "react-dnd";
 
 type Props = {

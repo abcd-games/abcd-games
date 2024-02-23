@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -28,9 +29,7 @@ public class BattleShipService {
                 .availableShipsPerPlayer(BattleshipConfig.defaultConfig.getAvailableShipsPerPlayer())
                 .maxPlayers(BattleshipConfig.defaultConfig.getMaxPlayers())
                 .requiredPlayers(BattleshipConfig.defaultConfig.getRequiredPlayers())
-                .boardPlayer1(battleshipRequest.getBoardPlayer1())
-                .boardPlayer2(BattleshipField.createEmptyBoard())
-                .players(List.of(player))
+                .playerBoards(Map.of(player, battleshipRequest.getBoard(), new Player("0", "BOT"), battleshipRequest.getBoard()))
                 .currentTurn(player)
                 .build();
 
@@ -47,9 +46,11 @@ public class BattleShipService {
 
         if (battleship.getCurrentTurn().getId().equals(player.getId())) {
 
-            BattleshipField[][] board = battleship.getPlayers().indexOf(battleship.getCurrentTurn()) == 0
-                    ? battleship.getBoardPlayer2()
-                    : battleship.getBoardPlayer1();
+            BattleshipField[][] board = battleship.getPlayerBoards().entrySet().stream()
+                    .filter(playerEntry -> playerEntry.getKey().getId().equals(battleshipTurnRequest.targetPlayerId()))
+                    .findAny()
+                    .orElseThrow()
+                    .getValue();
 
             BattleshipField target = board[battleshipTurnRequest.y()][battleshipTurnRequest.x()];
 

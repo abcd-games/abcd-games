@@ -1,11 +1,11 @@
-import {BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
 import BattleshipFieldCardDraggable from "./BattleshipFieldCardDraggable.tsx";
 import BattleshipFieldCard from "./BattleshipFieldCard.tsx";
 
 type Props = {
     board: BattleshipField[][];
     onShipSelect: (ship: BattleshipShip, position: { x: number, y: number }) => void;
-    onFieldClick: (position: { x: number, y: number }) => void;
+    onFieldClick: (position: { x: number, y: number}) => void;
     setup: boolean
 }
 

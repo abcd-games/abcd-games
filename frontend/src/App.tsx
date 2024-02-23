@@ -28,7 +28,7 @@ export default function App() {
                        element={<RegisterPage appUser={appUser} loadingAppUser={loadingAppUser}
                                               registerUser={register}/>}/>
                 <Route path="/games">
-                    <Route path="battleships/*" element={<BattleshipsPage/>}/>
+                    <Route path="battleships/*" element={<BattleshipsPage appUser={appUser}/>}/>
                 </Route>
             </Routes>
             <ToastContainer

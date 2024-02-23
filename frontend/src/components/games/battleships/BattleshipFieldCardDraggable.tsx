@@ -1,4 +1,4 @@
-import {BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
 import {useDrop} from "react-dnd";
 
 type Props = {

@@ -1,14 +1,18 @@
 import {useEffect, useState} from "react";
-import {Battleship, BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipDetails} from "../../../types/BattleshipListDto.ts";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
 import axios from "axios";
 import {useParams} from "react-router-dom";
+import {AppUser} from "../../../types/AppUser.ts";
+
+type Props = {
+    appUser: AppUser | null
+}
+
+export default function BattleshipGameCard(props: Props) {
 
 
-export default function BattleshipGameCard() {
-
-
-    const [game, setGame] = useState<Battleship>();
+    const [game, setGame] = useState<BattleshipDetails>();
 
     const {id} = useParams<{ id: string }>();
 
@@ -22,19 +26,21 @@ export default function BattleshipGameCard() {
         return <div>Loading...</div>
     }
 
-    const onShipSelect = (ship: BattleshipShip, position: { x: number, y: number }) => {
-        console.log(ship, position);
-        setGame({
-            ...game, boardPlayer1: game.boardPlayer1.map((row, rowIndex) => row.map((f, columnIndex) => {
-                if (rowIndex === position.y && columnIndex === position.x) {
-                    return "SHIP";
-                }
-                return f;
-            }))
-        });
-    }
+    // const onShipSelect = (ship: BattleshipShip, position: { x: number, y: number }) => {
+    //     console.log(ship, position);
+    //     // setGame({
+    //     //     ...game, boards: {
+    //     //         ...game.boards,
+    //     //         Object.keys(game.boards).filter game.map((row, rowIndex) => row.map((f, columnIndex) => {
+    //     //         if (rowIndex === position.y && columnIndex === position.x) {
+    //     //             return "SHIP";
+    //     //         }
+    //     //         return f;
+    //     //     }))}
+    //     // });
+    // }
 
-    const makeTurn = (position: { x: number, y: number }) => {
+    const makeTurn = (position: { x: number, y: number, targetPlayerId: string }) => {
         axios.post('/api/games/battleships/' + id + '/turn', position)
             .then(response => setGame(response.data))
     }
@@ -42,17 +48,20 @@ export default function BattleshipGameCard() {
     return (
         <div>
             <p>My Board</p>
-            <BattleshipBoardCard board={game.boardPlayer1}
-                                 setup={false}
-                                 onShipSelect={onShipSelect}
-                                 onFieldClick={() => {
-                                 }}/>
+            {props.appUser && <BattleshipBoardCard board={game.boards[props.appUser.id]}
+                                                   setup={false}
+                                                   onShipSelect={() => {
+                                                   }}
+                                                   onFieldClick={() => {
+                                                   }}/>
+            }
 
             <p>Enemy Board</p>
-            <BattleshipBoardCard board={game.boardPlayer2}
-                                 setup={false}
-                                 onShipSelect={onShipSelect}
-                                 onFieldClick={makeTurn}/>
+            {Object.keys(game.boards).filter(key => key !== props.appUser?.id.toString()).map(key => (
+                <BattleshipBoardCard board={game.boards[key]}
+                                     setup={false}
+                                     onShipSelect={() => {}}
+                                     onFieldClick={(position) => makeTurn({...position, targetPlayerId: key})}/>))}
         </div>
     );
 }

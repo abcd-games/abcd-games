@@ -3,7 +3,7 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
 import BattleshipShipSelection from "./BattleshipShipSelection.tsx";
 import {useState} from "react";
-import {BattleshipCreation, BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipCreation, BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
 import {shipLengths} from "./BattleshipShipCard.tsx";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
@@ -39,20 +39,19 @@ export default function BattleshipCreateView() {
 
     const [shipPositions, setShipPositions] = useState<ShipPositions>(initShipPosition)
     const [game, setGame] = useState<BattleshipCreation>({
-        boardPlayer1: defaultBattleshipBoard,
-        availableShipsPerPlayer: initShipPosition.map(sp => sp.ship),
+        board: defaultBattleshipBoard
     })
     const navigate = useNavigate()
 
     const updateGameFromShipPositions = (newShipPositions: ShipPositions) => {
         setGame({
-            ...game, boardPlayer1: game.boardPlayer1
+            ...game, board: game.board
                 .map((row, rowIndex) => row
                     .map((_, columnIndex) => {
                         const shipPosition = newShipPositions
                             .find(sp => sp.position?.y === rowIndex
                                 && sp.position?.x <= columnIndex
-                                && sp.position?.x + shipLengths[sp.ship] > columnIndex )
+                                && sp.position?.x + shipLengths[sp.ship] > columnIndex)
                         if (shipPosition !== undefined) {
                             return "SHIP";
                         } else {
@@ -68,10 +67,10 @@ export default function BattleshipCreateView() {
 
         if (Array(shipLengths[ship]).fill(0)
             .map((_, index) => ({x: position.x + index, y: position.y}))
-            .some(p => game.boardPlayer1[p.y][p.x] !== "EMPTY")) {
+            .some(p => game.board[p.y][p.x] !== "EMPTY")) {
             return;
         }
-        if (game.boardPlayer1[position.y][position.x] !== "EMPTY") {
+        if (game.board[position.y][position.x] !== "EMPTY") {
             return;
         }
 
@@ -110,7 +109,7 @@ export default function BattleshipCreateView() {
             <h1>Create Battleship Game</h1>
             <DndProvider backend={HTML5Backend}>
                 <div className="battleship_create_view">
-                    <BattleshipBoardCard board={game.boardPlayer1}
+                    <BattleshipBoardCard board={game.board}
                                          setup={true}
                                          onShipSelect={onShipSelect}
                                          onFieldClick={removeShip}/>

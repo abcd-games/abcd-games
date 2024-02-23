@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -23,40 +24,24 @@ public class Battleship {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "battleship_players",
-            joinColumns = @JoinColumn(name = "battleship_id"),
-            inverseJoinColumns = @JoinColumn(name = "player_id")
+    @MapKeyJoinColumn(name = "player_id")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Type(value = EnumArrayType.class,
+            parameters = @org.hibernate.annotations.Parameter(
+                    name = "sql_array_type",
+                    value = "battleship_field"
+            ))
+    @Column(
+            name = "board",
+            columnDefinition = "battleship_field[][]"
     )
-    private List<Player> players;
+    private Map<Player, BattleshipField[][]> playerBoards;
+
 
     @Column(name = "required_players")
     private int requiredPlayers;
     @Column(name = "max_players")
     private int maxPlayers;
-
-    @Type(value = EnumArrayType.class,
-            parameters = @org.hibernate.annotations.Parameter(
-                    name = "sql_array_type",
-                    value = "battleship_field"
-            ))
-    @Column(
-            name = "board_player1",
-            columnDefinition = "battleship_field[][]"
-    )
-    private BattleshipField[][] boardPlayer1;
-
-    @Type(value = EnumArrayType.class,
-            parameters = @org.hibernate.annotations.Parameter(
-                    name = "sql_array_type",
-                    value = "battleship_field"
-            ))
-    @Column(
-            name = "board_player2",
-            columnDefinition = "battleship_field[][]"
-    )
-    private BattleshipField[][] boardPlayer2;
 
     @Enumerated
     @Column(name = "available_ships_per_player")
