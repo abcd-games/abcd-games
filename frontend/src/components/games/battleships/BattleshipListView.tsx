@@ -1,5 +1,5 @@
 import useBattleships from "../../../hooks/useBattleship.tsx";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export default function BattleshipListView() {
 
@@ -12,7 +12,7 @@ export default function BattleshipListView() {
 
     return (
         <div>
-            {battleships.map(battleship => <div key={battleship.id} onClick={() => navigate(battleship.id)}>{battleship.id}</div>)}
+            {battleships.map(battleship => <Link to={battleship.id} key={battleship.id}>{battleship.id}</Link>)}
             <button onClick={startBattleshipGameClick} className="btn btn-outline-light">Start</button>
         </div>
     )

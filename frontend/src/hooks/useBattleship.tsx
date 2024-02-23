@@ -1,9 +1,9 @@
-import {BattleshipListDto} from "../types/BattleshipListDto.ts";
+import {Battleship} from "../types/Battleship.ts";
 import {useEffect, useState} from "react";
 import axios from "axios";
 
 export default function useBattleships() {
-    const [battleships, setBattleships] = useState<BattleshipListDto[]>([]);
+    const [battleships, setBattleships] = useState<Battleship[]>([]);
 
     useEffect(() => {
         fetchBattleships();
@@ -14,7 +14,7 @@ export default function useBattleships() {
             .then(response => setBattleships(response.data))
     }
 
-    function startBattleshipGame(battleship: BattleshipListDto) {
+    function startBattleshipGame(battleship: Battleship) {
         axios.post('/api/games/battleships', battleship)
             .then(response => {
                 const newBattleship = response.data;

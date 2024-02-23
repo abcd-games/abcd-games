@@ -1,16 +1,13 @@
 package com.github.abcdgames.backend.games.battleships.model;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class BattleshipConfig {
 
     public static final BattleshipConfig defaultConfig = defaultBattleShipConfig();
@@ -20,6 +17,9 @@ public class BattleshipConfig {
     private int maxPlayers;
     private List<BattleshipShip> availableShipsPerPlayer;
 
+    private BattleshipConfig() {
+
+    }
 
     private static BattleshipConfig defaultBattleShipConfig() {
         return BattleshipConfig.builder()

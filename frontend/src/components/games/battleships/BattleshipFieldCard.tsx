@@ -1,12 +1,11 @@
-import {BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
+import {BattleshipField} from "../../../types/Battleship.ts";
 
 type Props = {
     field: BattleshipField;
-    onShipSelect: (ship: BattleshipShip, position: { x: number, y: number }) => void;
     position: { x: number, y: number };
     onClick: (position: { x: number, y: number }) => void;
 }
-export default function BattleshipFieldCard(props: Props) {
+export default function BattleshipFieldCard(props: Readonly<Props>) {
 
 
     const onFieldClick = () => {
@@ -22,7 +21,7 @@ export default function BattleshipFieldCard(props: Props) {
     css += props.field === "SHIP"
         ? " bg-warning"
         : " border"
-    return <div className={css} onClick={onFieldClick}>
+    return <div className={css} onClick={onFieldClick} role="button">
         {props.field.charAt(0)}
     </div>;
 }

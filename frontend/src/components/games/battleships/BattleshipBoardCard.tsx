@@ -1,4 +1,4 @@
-import {BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
+import {BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
 import BattleshipFieldCardDraggable from "./BattleshipFieldCardDraggable.tsx";
 import BattleshipFieldCard from "./BattleshipFieldCard.tsx";
 
@@ -10,7 +10,7 @@ type Props = {
 }
 
 
-export default function BattleshipBoardCard(props: Props) {
+export default function BattleshipBoardCard(props: Readonly<Props>) {
 
     return (
         <div className="container">
@@ -31,7 +31,6 @@ export default function BattleshipBoardCard(props: Props) {
                         <BattleshipFieldCard key={columnIndex}
                                                       field={field}
                                                       position={{x: columnIndex, y: rowIndex}}
-                                                      onShipSelect={() => {}}
                                                       onClick={props.onFieldClick}/>
                     ))}
                 </div>

@@ -1,4 +1,4 @@
-import {BattleshipShip} from "../../../types/BattleshipListDto.ts";
+import {BattleshipShip} from "../../../types/Battleship.ts";
 import BattleshipShipCard from "./BattleshipShipCard.tsx";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 
 
 
-export default function BattleshipShipSelection(props: Props) {
+export default function BattleshipShipSelection(props: Readonly<Props>) {
     return (
         <div>
             {props.availableShips.map((ship, index) => (

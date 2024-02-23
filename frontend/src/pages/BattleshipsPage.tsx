@@ -9,7 +9,7 @@ type Props = {
     appUser: AppUser | null
 
 }
-export default function BattleshipsPage(props: Props) {
+export default function BattleshipsPage(props: Readonly<Props>) {
 
     return (
         <>

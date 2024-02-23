@@ -1,4 +1,4 @@
-import {BattleshipShip} from "../../../types/BattleshipListDto.ts";
+import {BattleshipShip} from "../../../types/Battleship.ts";
 import {useDrag} from "react-dnd";
 
 type Props = {
@@ -6,13 +6,13 @@ type Props = {
 
 }
 
-export const shipLengths = {
+export const shipLengths: {CARRIER: number, BATTLESHIP: number, CRUISER: number, DESTROYER: number} = {
     "CARRIER": 5,
     "BATTLESHIP": 4,
     "CRUISER": 3,
     "DESTROYER": 2
 }
-export default function BattleshipShipCard(props: Props) {
+export default function BattleshipShipCard(props: Readonly<Props>) {
 
 
     const [{isDragging}, drag] = useDrag(() => ({

@@ -3,67 +3,52 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
 import BattleshipShipSelection from "./BattleshipShipSelection.tsx";
 import {useState} from "react";
-import {BattleshipCreation, BattleshipField, BattleshipShip} from "../../../types/BattleshipListDto.ts";
+import {
+    BattleshipCreation,
+    BattleshipShip,
+    defaultBattleshipBoard,
+    defaultBattleshipConfig
+} from "../../../types/Battleship.ts";
 import {shipLengths} from "./BattleshipShipCard.tsx";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 type ShipPositions = { ship: BattleshipShip, position?: { x: number, y: number } }[]
-export const initShipPosition: ShipPositions = [
-    {ship: "CARRIER", position: undefined},
-    {ship: "BATTLESHIP", position: undefined},
-    {ship: "BATTLESHIP", position: undefined},
-    {ship: "CRUISER", position: undefined},
-    {ship: "CRUISER", position: undefined},
-    {ship: "CRUISER", position: undefined},
-    {ship: "DESTROYER", position: undefined},
-    {ship: "DESTROYER", position: undefined},
-    {ship: "DESTROYER", position: undefined},
-    {ship: "DESTROYER", position: undefined},
-]
-
-export const defaultBattleshipBoard: BattleshipField[][] = [
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
-    ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"]]
 
 
 export default function BattleshipCreateView() {
 
-    const [shipPositions, setShipPositions] = useState<ShipPositions>(initShipPosition)
+    const [shipPositions, setShipPositions] = useState<ShipPositions>(defaultBattleshipConfig.availableShipsPerPlayer.map(ship => ({ship})));
     const [game, setGame] = useState<BattleshipCreation>({
         board: defaultBattleshipBoard
     })
     const navigate = useNavigate()
 
     const updateGameFromShipPositions = (newShipPositions: ShipPositions) => {
+
+        function getCellValue(rowIndex: number, columnIndex: number, shipPositions: ShipPositions, shipLengths: {
+            CARRIER: number,
+            BATTLESHIP: number,
+            CRUISER: number,
+            DESTROYER: number
+        }) {
+            const shipPosition = shipPositions.find(({position, ship}) =>
+                position?.y === rowIndex &&
+                position.x <= columnIndex &&
+                position.x + shipLengths[ship] > columnIndex
+            );
+            return shipPosition ? "SHIP" : "EMPTY";
+        }
+
         setGame({
             ...game, board: game.board
                 .map((row, rowIndex) => row
-                    .map((_, columnIndex) => {
-                        const shipPosition = newShipPositions
-                            .find(sp => sp.position?.y === rowIndex
-                                && sp.position?.x <= columnIndex
-                                && sp.position?.x + shipLengths[sp.ship] > columnIndex)
-                        if (shipPosition !== undefined) {
-                            return "SHIP";
-                        } else {
-                            return "EMPTY";
-                        }
-                    })
+                    .map((_, columnIndex) => getCellValue(rowIndex, columnIndex, newShipPositions, shipLengths))
                 )
         });
     }
 
-    const onShipSelect = (ship: BattleshipShip, position: { x: number, y: number }) => {
-        console.log(ship, position);
+    const onShipPlaced = (ship: BattleshipShip, position: { x: number, y: number }) => {
 
         if (Array(shipLengths[ship]).fill(0)
             .map((_, index) => ({x: position.x + index, y: position.y}))
@@ -84,8 +69,6 @@ export default function BattleshipCreateView() {
     }
 
     const removeShip = (position: { x: number, y: number }) => {
-        console.log(position)
-
         const newShipPositions = shipPositions.map(sp => {
             if (sp.position?.y === position.y
                 && sp.position?.x <= position.x
@@ -111,7 +94,7 @@ export default function BattleshipCreateView() {
                 <div className="battleship_create_view">
                     <BattleshipBoardCard board={game.board}
                                          setup={true}
-                                         onShipSelect={onShipSelect}
+                                         onShipSelect={onShipPlaced}
                                          onFieldClick={removeShip}/>
                     <BattleshipShipSelection
                         availableShips={shipPositions.filter(sp => sp.position === undefined).map(sp => sp.ship)}/>

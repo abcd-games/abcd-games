@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {BattleshipDetails} from "../../../types/BattleshipListDto.ts";
+import {BattleshipDetails} from "../../../types/Battleship.ts";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
 import axios from "axios";
 import {useParams} from "react-router-dom";
@@ -9,7 +9,7 @@ type Props = {
     appUser: AppUser | null
 }
 
-export default function BattleshipGameCard(props: Props) {
+export default function BattleshipGameCard(props: Readonly<Props>) {
 
 
     const [game, setGame] = useState<BattleshipDetails>();
@@ -25,20 +25,6 @@ export default function BattleshipGameCard(props: Props) {
     if (game === undefined) {
         return <div>Loading...</div>
     }
-
-    // const onShipSelect = (ship: BattleshipShip, position: { x: number, y: number }) => {
-    //     console.log(ship, position);
-    //     // setGame({
-    //     //     ...game, boards: {
-    //     //         ...game.boards,
-    //     //         Object.keys(game.boards).filter game.map((row, rowIndex) => row.map((f, columnIndex) => {
-    //     //         if (rowIndex === position.y && columnIndex === position.x) {
-    //     //             return "SHIP";
-    //     //         }
-    //     //         return f;
-    //     //     }))}
-    //     // });
-    // }
 
     const makeTurn = (position: { x: number, y: number, targetPlayerId: string }) => {
         axios.post('/api/games/battleships/' + id + '/turn', position)
@@ -58,9 +44,11 @@ export default function BattleshipGameCard(props: Props) {
 
             <p>Enemy Board</p>
             {Object.keys(game.boards).filter(key => key !== props.appUser?.id.toString()).map(key => (
-                <BattleshipBoardCard board={game.boards[key]}
+                <BattleshipBoardCard key={key}
+                                     board={game.boards[key]}
                                      setup={false}
-                                     onShipSelect={() => {}}
+                                     onShipSelect={() => {
+                                     }}
                                      onFieldClick={(position) => makeTurn({...position, targetPlayerId: key})}/>))}
         </div>
     );
