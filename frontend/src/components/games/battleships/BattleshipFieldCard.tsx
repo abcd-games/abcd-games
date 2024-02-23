@@ -33,7 +33,5 @@ export default function BattleshipFieldCard(props: Readonly<Props>) {
         css += " bg-primary border"
     }
 
-    return <div className={css} ref={props.dropTargetRef} onClick={onFieldClick} role="button">
-        {props.field.charAt(0)}
-    </div>;
+    return <input type="button" className={css} ref={props.dropTargetRef} onClick={onFieldClick} role="button"/>;
 }
