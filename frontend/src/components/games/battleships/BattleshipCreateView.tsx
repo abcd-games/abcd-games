@@ -7,13 +7,15 @@ import {
     BattleshipCreation,
     BattleshipShip,
     defaultBattleshipBoard,
-    defaultBattleshipConfig
+    defaultBattleshipConfig, shipLengths
 } from "../../../types/Battleship.ts";
-import {shipLengths} from "./BattleshipShipCard.tsx";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
-type ShipPositions = { ship: BattleshipShip, position?: { x: number, y: number } }[]
+type ShipPositions = {
+    ship: BattleshipShip,
+    position?: { x: number, y: number, alignment: "horizontal" | "vertical" }
+}[]
 
 
 export default function BattleshipCreateView() {
@@ -32,11 +34,25 @@ export default function BattleshipCreateView() {
             CRUISER: number,
             DESTROYER: number
         }) {
-            const shipPosition = shipPositions.find(({position, ship}) =>
-                position?.y === rowIndex &&
-                position.x <= columnIndex &&
-                position.x + shipLengths[ship] > columnIndex
-            );
+            const shipPosition = shipPositions.find(({position, ship}) => {
+                if (position === undefined) return false;
+
+                if (position.y === rowIndex && position.x === columnIndex) {
+                    return true;
+                }
+
+                if (position.alignment === "horizontal") {
+                    return position.y === rowIndex &&
+                        position.x <= columnIndex &&
+                        position.x + shipLengths[ship] > columnIndex
+                }
+
+                if (position.alignment === "vertical") {
+                    return position.x === columnIndex &&
+                        position.y <= rowIndex &&
+                        position.y + shipLengths[ship] > rowIndex
+                }
+            });
             return shipPosition ? "SHIP" : "EMPTY";
         }
 
@@ -48,10 +64,17 @@ export default function BattleshipCreateView() {
         });
     }
 
-    const onShipPlaced = (ship: BattleshipShip, position: { x: number, y: number }) => {
+    const onShipPlaced = (ship: BattleshipShip, position: {
+        x: number,
+        y: number,
+        alignment: "horizontal" | "vertical"
+    }) => {
+        console.log(ship, position)
+        const offSetVertical = position.alignment === "vertical" ? 1 : 0;
+        const offSetHorizontal = position.alignment === "horizontal" ? 1 : 0;
 
         if (Array(shipLengths[ship]).fill(0)
-            .map((_, index) => ({x: position.x + index, y: position.y}))
+            .map((_, index) => ({x: position.x + offSetHorizontal * index, y: position.y + offSetVertical * index}))
             .some(p => game.board[p.y][p.x] !== "EMPTY")) {
             return;
         }

@@ -68,3 +68,10 @@ export const defaultBattleshipBoard: BattleshipField[][] = [
     ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
     ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"],
     ["EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY", "EMPTY"]]
+
+export const shipLengths: { CARRIER: number, BATTLESHIP: number, CRUISER: number, DESTROYER: number } = {
+    "CARRIER": 5,
+    "BATTLESHIP": 4,
+    "CRUISER": 3,
+    "DESTROYER": 2
+}

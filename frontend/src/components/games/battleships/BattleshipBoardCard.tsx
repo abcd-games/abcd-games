@@ -4,7 +4,7 @@ import BattleshipFieldCard from "./BattleshipFieldCard.tsx";
 
 type Props = {
     board: BattleshipField[][];
-    onShipSelect: (ship: BattleshipShip, position: { x: number, y: number }) => void;
+    onShipSelect: (ship: BattleshipShip, position: { x: number, y: number, alignment: "horizontal" | "vertical"}) => void;
     onFieldClick: (position: { x: number, y: number}) => void;
     setup: boolean
 }
@@ -17,7 +17,7 @@ export default function BattleshipBoardCard(props: Readonly<Props>) {
             {props.setup && props.board.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                     {row.map((field, columnIndex) => (
-                        <BattleshipFieldDraggable key={columnIndex}
+                        <BattleshipFieldDraggable key={rowIndex + "" + columnIndex}
                                                   field={field}
                                                   position={{x: columnIndex, y: rowIndex}}
                                                   onShipSelect={props.onShipSelect}
@@ -28,7 +28,7 @@ export default function BattleshipBoardCard(props: Readonly<Props>) {
             {!props.setup && props.board.map((row, rowIndex) => (
                 <div key={rowIndex} className="row">
                     {row.map((field, columnIndex) => (
-                        <BattleshipFieldCard key={columnIndex}
+                        <BattleshipFieldCard key={rowIndex + "" + columnIndex}
                                                       field={field}
                                                       position={{x: columnIndex, y: rowIndex}}
                                                       onClick={props.onFieldClick}/>

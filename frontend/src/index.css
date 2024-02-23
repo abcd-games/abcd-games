@@ -15,8 +15,19 @@
     align-items: center;
 }
 
-.battleship_ship_selection {
+.battleship_ship_selection_ship_horizontal {
     display: flex;
     justify-content: space-between;
     padding: 10px;
+}
+
+.battleship_ship_selection_ship_vertical {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.battleship_ship_selection {
+    display: flex;
 }

@@ -1,34 +1,30 @@
-import {BattleshipShip} from "../../../types/Battleship.ts";
+import {BattleshipShip, shipLengths} from "../../../types/Battleship.ts";
 import {useDrag} from "react-dnd";
 
 type Props = {
     ship: BattleshipShip;
-
+    alignment: "horizontal" | "vertical";
 }
 
-export const shipLengths: {CARRIER: number, BATTLESHIP: number, CRUISER: number, DESTROYER: number} = {
-    "CARRIER": 5,
-    "BATTLESHIP": 4,
-    "CRUISER": 3,
-    "DESTROYER": 2
-}
 export default function BattleshipShipCard(props: Readonly<Props>) {
 
 
     const [{isDragging}, drag] = useDrag(() => ({
         type: "battleshipShip",
-        item: {ship: props.ship},
+        item: {ship: props.ship, alignment: props.alignment},
         collect: monitor => ({
             isDragging: monitor.isDragging(),
         }),
     }), [props.ship])
 
-    const css = isDragging ? "battleship_ship_selection border disabled" : "battleship_ship_selection border";
+    let css = "border battleship_ship_selection_ship_" + props.alignment;
+    css += isDragging ? " disabled" : "";
+
     return <div ref={drag} className={css}>
         {
             Array(shipLengths[props.ship])
                 .fill(props.ship)
-                .map((_, index) => <div key={index} className="battleship_ship_card border">{props.ship}</div>
-        )}
+                .map((_, index) => <div key={index} className="border">{props.ship}</div>
+                )}
     </div>;
 }
