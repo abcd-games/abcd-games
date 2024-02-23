@@ -1,5 +1,6 @@
 import {BattleshipField, BattleshipShip} from "../../../types/Battleship.ts";
 import {useDrop} from "react-dnd";
+import BattleshipFieldCard from "./BattleshipFieldCard.tsx";
 
 type Props = {
     field: BattleshipField;
@@ -7,7 +8,7 @@ type Props = {
     position: { x: number, y: number };
     onClick: (position: { x: number, y: number }) => void;
 }
-export default function BattleshipFieldCardDraggable(props: Readonly<Props>) {
+export default function BattleshipFieldDraggable(props: Readonly<Props>) {
 
     const [{isOver}, drop] = useDrop<{ ship: BattleshipShip }, void, { isOver: boolean, canDrop: boolean }>(() => ({
         accept: "battleshipShip",
@@ -20,17 +21,9 @@ export default function BattleshipFieldCardDraggable(props: Readonly<Props>) {
         }),
     }), [props.field, props.position, props.onShipSelect])
 
-    const onFieldClick = () => {
-        props.onClick(props.position)
-    }
-
-    let css = "battleship_field_card col"
-    if (isOver) {
-        css += props.field === "EMPTY" ? "  border-success" : " border-danger"
-    }
-    css += props.field === "SHIP" ? " bg-warning" : " border"
-
-    return <div ref={drop} className={css} onClick={onFieldClick} role="button">
-        {props.field.charAt(0)}
-    </div>;
+    return <BattleshipFieldCard field={props.field}
+                                position={props.position}
+                                onClick={props.onClick}
+                                dropTargetRef={drop}
+                                isOver={isOver}/>;
 }

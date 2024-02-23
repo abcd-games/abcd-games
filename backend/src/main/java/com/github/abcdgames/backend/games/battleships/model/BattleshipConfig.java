@@ -17,8 +17,11 @@ public class BattleshipConfig {
     private int maxPlayers;
     private List<BattleshipShip> availableShipsPerPlayer;
 
-    private BattleshipConfig() {
-
+    private BattleshipConfig(int boardSize, int requiredPlayers, int maxPlayers, List<BattleshipShip> availableShipsPerPlayer) {
+        this.boardSize = boardSize;
+        this.requiredPlayers = requiredPlayers;
+        this.maxPlayers = maxPlayers;
+        this.availableShipsPerPlayer = availableShipsPerPlayer;
     }
 
     private static BattleshipConfig defaultBattleShipConfig() {
