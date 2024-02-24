@@ -40,6 +40,18 @@ export type BattleshipConfig = {
     availableShipsPerPlayer: BattleshipShip[],
 }
 
+export type BattleshipTurnRequest = {
+    x: number,
+    y: number,
+    targetPlayerId: string
+}
+
+export type BattleshipTurnResponse = {
+    battleshipTurnRequest: BattleshipTurnRequest,
+    result: BattleshipField,
+}
+
+
 export const defaultBattleshipConfig: BattleshipConfig = {
     boardSize: 10,
     requiredPlayers: 1,

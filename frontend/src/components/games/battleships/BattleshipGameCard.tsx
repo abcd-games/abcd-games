@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {BattleshipDetails} from "../../../types/Battleship.ts";
+import {BattleshipDetails, BattleshipTurnRequest, BattleshipTurnResponse} from "../../../types/Battleship.ts";
 import BattleshipBoardCard from "./BattleshipBoardCard.tsx";
 import axios from "axios";
 import {useParams} from "react-router-dom";
@@ -26,9 +26,31 @@ export default function BattleshipGameCard(props: Readonly<Props>) {
         return <div>Loading...</div>
     }
 
-    const makeTurn = (position: { x: number, y: number, targetPlayerId: string }) => {
+    const applyTurnResponse = (response: BattleshipTurnResponse) => {
+        if (response === undefined) return;
+        const board = game.boards[response.battleshipTurnRequest.targetPlayerId];
+        board[response.battleshipTurnRequest.y][response.battleshipTurnRequest.x] = response.result;
+        setGame(prevState => {
+            if (prevState === undefined) return prevState;
+            return {...prevState, boards: {...game.boards, [response.battleshipTurnRequest.targetPlayerId]: board}}
+        })
+    }
+
+    const applyMultipleTurnsResponse = (responses: BattleshipTurnResponse[], startIndex: number) => {
+        setTimeout(function() {
+            applyTurnResponse(responses[startIndex])
+            if (startIndex < responses.length) {
+                applyMultipleTurnsResponse(responses, startIndex + 1)
+            }
+        }, 1000)
+    }
+
+    const makeTurn = (position: BattleshipTurnRequest) => {
         axios.post('/api/games/battleships/' + id + '/turn', position)
-            .then(response => setGame(response.data))
+            .then(response => {
+                applyTurnResponse(response.data[0])
+                applyMultipleTurnsResponse(response.data, 1)
+            })
     }
 
     return (

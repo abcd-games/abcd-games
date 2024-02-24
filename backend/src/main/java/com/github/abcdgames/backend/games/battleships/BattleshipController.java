@@ -49,12 +49,11 @@ public class BattleshipController {
     }
 
     @PostMapping("/{id}/turn")
-    BattleshipDetailsResponse makeTurn(@AuthenticationPrincipal AppUser user,
+    List<BattleshipTurnResponse> makeTurn(@AuthenticationPrincipal AppUser user,
                                        @RequestBody BattleshipTurnRequest battleshipTurnRequest,
                                        @PathVariable String id) {
-        Battleship battleshipAfterTurn = battleShipService.makeTurn(battleshipTurnRequest, id, user);
 
-        return getBattleshipDetailsResponse(battleshipAfterTurn, user);
+        return battleShipService.makeTurn(battleshipTurnRequest, id, user);
     }
 
     private BattleshipDetailsResponse getBattleshipDetailsResponse(Battleship createdBattleship, AppUser user) {

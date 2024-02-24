@@ -7,10 +7,7 @@ import com.github.abcdgames.backend.player.PlayerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +38,9 @@ public class BattleShipService {
         return battleshipRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Battleship with id: " + id + " not found."));
     }
 
-    public Battleship makeTurn(BattleshipTurnRequest battleshipTurnRequest, String id, AppUser user) {
+    public List<BattleshipTurnResponse> makeTurn(BattleshipTurnRequest battleshipTurnRequest, String id, AppUser user) {
+        List<BattleshipTurnResponse> turnResponses = new ArrayList<>();
+
         Battleship battleship = findById(id);
         Player player = playerService.getPlayerById(String.valueOf(user.getId()));
 
@@ -61,8 +60,17 @@ public class BattleShipService {
 
             if (target == BattleshipField.SHIP) {
                 board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.HIT;
+                turnResponses.add(BattleshipTurnResponse.builder()
+                        .battleshipTurnRequest(battleshipTurnRequest)
+                        .result(BattleshipField.HIT)
+                        .build());
             } else {
                 board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.MISS;
+                turnResponses.add(BattleshipTurnResponse.builder()
+                        .battleshipTurnRequest(battleshipTurnRequest)
+                        .result(BattleshipField.MISS)
+                        .build());
+
                 battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
                         .filter(p -> !p.getId().equals(player.getId()))
                         .findAny()
@@ -74,18 +82,35 @@ public class BattleShipService {
                     int targetX = random.nextInt(10);
                     int targetY = random.nextInt(10);
 
-                    board = battleship.getPlayerBoards().entrySet().stream()
+                    Map.Entry<Player, BattleshipField[][]> targetEntry = battleship.getPlayerBoards().entrySet().stream()
                             .filter(entry -> !entry.getKey().getId().equals(battleship.getCurrentTurn().getId()))
                             .findAny()
-                            .orElseThrow()
-                            .getValue();
+                            .orElseThrow();
+
+                    board = targetEntry.getValue();
 
                     target = board[targetY][targetX];
 
                     if (target == BattleshipField.SHIP) {
                         board[targetY][targetX] = BattleshipField.HIT;
+                        turnResponses.add(BattleshipTurnResponse.builder()
+                                .battleshipTurnRequest(BattleshipTurnRequest.builder()
+                                        .targetPlayerId(targetEntry.getKey().getId())
+                                        .x(targetX)
+                                        .y(targetY)
+                                        .build())
+                                .result(BattleshipField.HIT)
+                                .build());
                     } else if (target == BattleshipField.EMPTY){
                         board[targetY][targetX] = BattleshipField.MISS;
+                        turnResponses.add(BattleshipTurnResponse.builder()
+                                .battleshipTurnRequest(BattleshipTurnRequest.builder()
+                                        .targetPlayerId(targetEntry.getKey().getId())
+                                        .x(targetX)
+                                        .y(targetY)
+                                        .build())
+                                .result(BattleshipField.MISS)
+                                .build());
                         battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
                                 .filter(p -> !p.getId().equals("0"))
                                 .findAny()
@@ -94,7 +119,10 @@ public class BattleShipService {
                 }
             }
 
-            return battleshipRepository.save(battleship);
+            battleshipRepository.save(battleship);
+
+            return turnResponses;
+
         } else {
             throw new IllegalArgumentException("It's not your turn.");
         }
