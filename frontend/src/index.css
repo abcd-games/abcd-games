@@ -9,6 +9,19 @@
     text-align: center;
 }
 
+.battleship_board_enemy.disabled .battleship_field_card {
+    cursor: wait;
+}
+
+.battleship_board_enemy .battleship_field_card {
+    cursor: crosshair;
+}
+
+.battleship_field_card.not_empty {
+    cursor: default;
+}
+
+
 .battleship_create_view {
     display: flex;
     flex-direction: column;
@@ -30,4 +43,8 @@
 
 .battleship_ship_selection {
     display: flex;
+}
+
+.battleship_board_own .battleship_field_card {
+    cursor: default;
 }

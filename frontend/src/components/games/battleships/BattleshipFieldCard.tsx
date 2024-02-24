@@ -24,13 +24,13 @@ export default function BattleshipFieldCard(props: Readonly<Props>) {
         css += " bg-info border"
     }
     if (props.field === "SHIP") {
-        css += " bg-warning border border-warning"
+        css += " bg-warning border border-warning not_empty"
     }
     if (props.field === "HIT") {
-        css += " bg-danger border border-danger"
+        css += " bg-danger border border-danger not_empty"
     }
     if (props.field === "MISS") {
-        css += " bg-primary border"
+        css += " bg-primary border not_empty"
     }
 
     return <button className={css} ref={props.dropTargetRef} onClick={onFieldClick} role="button"/>;
