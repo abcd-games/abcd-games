@@ -93,9 +93,19 @@ export default function BattleshipCreateView() {
 
     const removeShip = (position: { x: number, y: number }) => {
         const newShipPositions = shipPositions.map(sp => {
-            if (sp.position?.y === position.y
-                && sp.position?.x <= position.x
-                && sp.position?.x + shipLengths[sp.ship] > position.x) {
+            if (sp.position === undefined) return sp;
+
+            if (sp.position.alignment === "vertical") {
+                if (sp.position.x === position.x
+                    && sp.position.y <= position.y
+                    && sp.position.y + shipLengths[sp.ship] > position.y) {
+
+                    return {...sp, position: undefined}
+                }
+            } else if (sp.position.y === position.y
+                && sp.position.x <= position.x
+                && sp.position.x + shipLengths[sp.ship] > position.x) {
+
                 return {...sp, position: undefined}
             }
             return sp;
