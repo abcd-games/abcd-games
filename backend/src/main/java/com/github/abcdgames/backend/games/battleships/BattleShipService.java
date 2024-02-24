@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,35 @@ public class BattleShipService {
                 board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.HIT;
             } else {
                 board[battleshipTurnRequest.y()][battleshipTurnRequest.x()] = BattleshipField.MISS;
+                battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
+                        .filter(p -> !p.getId().equals(player.getId()))
+                        .findAny()
+                        .orElseThrow());
+
+                while (battleship.getCurrentTurn().getId().equals("0")) {
+                    Random random = new Random();
+
+                    int targetX = random.nextInt(10);
+                    int targetY = random.nextInt(10);
+
+                    board = battleship.getPlayerBoards().entrySet().stream()
+                            .filter(entry -> !entry.getKey().getId().equals(battleship.getCurrentTurn().getId()))
+                            .findAny()
+                            .orElseThrow()
+                            .getValue();
+
+                    target = board[targetY][targetX];
+
+                    if (target == BattleshipField.SHIP) {
+                        board[targetY][targetX] = BattleshipField.HIT;
+                    } else if (target == BattleshipField.EMPTY){
+                        board[targetY][targetX] = BattleshipField.MISS;
+                        battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
+                                .filter(p -> !p.getId().equals("0"))
+                                .findAny()
+                                .orElseThrow());
+                    }
+                }
             }
 
             return battleshipRepository.save(battleship);
