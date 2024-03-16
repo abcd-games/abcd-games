@@ -10,7 +10,7 @@ function ValidationMessage(props: Props) {
     return (
         <>
             <p
-                className={props.validationMessageColor}
+                className={props.validationMessageColor + " p-2"}
                 style={props.validationMessageSize}>{props.validationMessage}
             </p>
         </>
