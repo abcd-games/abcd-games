@@ -34,45 +34,38 @@ export type Validation={
 export const name_validation : Validation = {
         required: {
             value: true,
-            message: 'required',
+            message: 'Username is required.',
         },
         minLength: {
             value:3,
-            message:"3 characters min"
+            message: 'Username must be at least 3 characters long'
         },
         maxLength: {
             value: 20,
-            message: '20 characters max',
+            message: 'Username can\'t exceed 30 characters.',
         },
 }
 
 export const password_validation = {
         required: {
             value: true,
-            message: 'required',
+            message: 'Password is required.',
         },
         minLength: {
             value: 6,
-            message: 'min 6 characters',
-        },
-}
-
-export const num_validation = {
-        required: {
-            value: true,
-            message: 'required',
+            message: `Password must be at least 6 characters long.`,
         },
 }
 
 export const email_validation = {
         required: {
             value: true,
-            message: 'required',
+            message: 'Email address is required.',
         },
         pattern: {
             value:
                 /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            message: 'not valid',
+            message: 'Please enter a valid email address.',
         },
 }
 
