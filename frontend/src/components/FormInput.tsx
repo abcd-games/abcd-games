@@ -12,7 +12,6 @@ export type Props = {
     validation: Validation,
     className: string,
     setFormValue: (event: ChangeEvent<HTMLInputElement>) => void,
-    multiline?: boolean
 }
 
 export function FormInput(props: Props) {

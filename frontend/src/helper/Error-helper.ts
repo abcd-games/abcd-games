@@ -11,30 +11,22 @@ export const validateErrors = (value: string| number, validation: Validation) : 
         return []
     }
     const errors : FormErrors = [];
-    if (typeof value === "string") {
-        if (validation.required) {
-            if (value.length === 0) {
-                errors.push({message: validation.required.message})
+    switch (typeof value) {
+        case "string":
+            if (validation.required && value.length === 0) {
+                errors.push({ message: validation.required.message });
             }
-        }
-        if (validation.maxLength) {
-            if (value.length > validation.maxLength.value) {
-                errors.push({message: validation.maxLength.message})
+            if (validation.maxLength && value.length > validation.maxLength.value) {
+                errors.push({ message: validation.maxLength.message });
             }
-        }
-        if (validation.minLength) {
-            if (value.length < validation.minLength.value) {
-                errors.push({message: validation.minLength.message})
+            if (validation.minLength && value.length < validation.minLength.value) {
+                errors.push({ message: validation.minLength.message });
             }
-        }
-        if (validation.pattern) {
-            if (!value.match(validation.pattern.value)) {
-                errors.push({message: validation.pattern.message})
+            if (validation.pattern && !validation.pattern.value.exec(value)) {
+                errors.push({ message: validation.pattern.message });
             }
-        }
-    }
-    if (typeof value === "number"){
-
+            break;
+        case "number":
     }
     return errors;
 }
