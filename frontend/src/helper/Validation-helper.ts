@@ -1,7 +1,18 @@
 import {validateErrors} from "./Error-helper.ts";
+import {CSSProperties} from "react";
+
+export const validationDanger = "text-danger"
+export const validationWarning = "text-warning"
+export const validationSuccess ="text-success"
+
+export type ValidationMessageColors = typeof validationDanger | typeof validationWarning | typeof validationSuccess
+
+export const validationTextSmall : CSSProperties = {fontSize: 14}
+export const validationTextBig : CSSProperties = {fontSize:16}
+
+export type ValidationMessageSize = typeof validationTextSmall | typeof validationTextBig
 
 export type Validation={
-    email?:boolean,
     required?: {
         value:boolean,
         message: string,
@@ -35,17 +46,6 @@ export const name_validation : Validation = {
         },
 }
 
-export const desc_validation = {
-        required: {
-            value: true,
-            message: 'required',
-        },
-        maxLength: {
-            value: 200,
-            message: '200 characters max',
-        }
-}
-
 export const password_validation = {
         required: {
             value: true,
@@ -65,7 +65,6 @@ export const num_validation = {
 }
 
 export const email_validation = {
-        email: true,
         required: {
             value: true,
             message: 'required',
@@ -77,7 +76,6 @@ export const email_validation = {
         },
 }
 
-export const isValid = (value: string, validation: Validation) =>{
+export const checkFieldValid = (value: string, validation: Validation) =>{
     return validateErrors(value,validation).length === 0;
 }
-

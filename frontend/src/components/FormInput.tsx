@@ -1,7 +1,7 @@
-import {Validation} from "../helper/Validation-helper.ts";
+import {Validation, validationTextSmall, validationWarning} from "../helper/Validation-helper.ts";
 import {ChangeEvent, useState} from "react";
 import {FormErrors, validateErrors} from "../helper/Error-helper.ts";
-import ValidationError from "./ValidationError.tsx";
+import ValidationMessage from "./ValidationMessage.tsx";
 
 export type Props = {
     name: string,
@@ -11,7 +11,8 @@ export type Props = {
     placeholder: string,
     validation: Validation,
     className: string,
-    setFormValue: (event: ChangeEvent<HTMLInputElement>) => void
+    setFormValue: (event: ChangeEvent<HTMLInputElement>) => void,
+    multiline?: boolean
 }
 
 export function FormInput(props: Props) {
@@ -37,9 +38,12 @@ export function FormInput(props: Props) {
             />
             <label htmlFor={props.id}>{props.label}</label>
             {errors &&
-                <ValidationError errorMessage={errors[0]?.message}></ValidationError>
+                <ValidationMessage
+                    validationMessageSize={validationTextSmall}
+                    validationMessageColor={validationWarning}
+                    validationMessage={errors[0]?.message}>
+                </ValidationMessage>
             }
         </>
     );
 }
-
