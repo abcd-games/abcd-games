@@ -27,7 +27,7 @@ public class BattleShipService {
                 .availableShipsPerPlayer(BattleshipConfig.defaultConfig.getAvailableShipsPerPlayer())
                 .maxPlayers(BattleshipConfig.defaultConfig.getMaxPlayers())
                 .requiredPlayers(BattleshipConfig.defaultConfig.getRequiredPlayers())
-                .playerBoards(Map.of(player, battleshipRequest.getBoard(), new Player("0", "BOT"), battleshipRequest.getBoard()))
+                .playerBoards(Map.of(player, battleshipRequest.getBoard(), new Player("0", "BOT"), createRandomBoard()))
                 .currentTurn(player)
                 .build();
 
@@ -77,45 +77,7 @@ public class BattleShipService {
                         .orElseThrow());
 
                 while (battleship.getCurrentTurn().getId().equals("0")) {
-                    Random random = new Random();
-
-                    int targetX = random.nextInt(10);
-                    int targetY = random.nextInt(10);
-
-                    Map.Entry<Player, BattleshipField[][]> targetEntry = battleship.getPlayerBoards().entrySet().stream()
-                            .filter(entry -> !entry.getKey().getId().equals(battleship.getCurrentTurn().getId()))
-                            .findAny()
-                            .orElseThrow();
-
-                    board = targetEntry.getValue();
-
-                    target = board[targetY][targetX];
-
-                    if (target == BattleshipField.SHIP) {
-                        board[targetY][targetX] = BattleshipField.HIT;
-                        turnResponses.add(BattleshipTurnResponse.builder()
-                                .battleshipTurnRequest(BattleshipTurnRequest.builder()
-                                        .targetPlayerId(targetEntry.getKey().getId())
-                                        .x(targetX)
-                                        .y(targetY)
-                                        .build())
-                                .result(BattleshipField.HIT)
-                                .build());
-                    } else if (target == BattleshipField.EMPTY){
-                        board[targetY][targetX] = BattleshipField.MISS;
-                        turnResponses.add(BattleshipTurnResponse.builder()
-                                .battleshipTurnRequest(BattleshipTurnRequest.builder()
-                                        .targetPlayerId(targetEntry.getKey().getId())
-                                        .x(targetX)
-                                        .y(targetY)
-                                        .build())
-                                .result(BattleshipField.MISS)
-                                .build());
-                        battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
-                                .filter(p -> !p.getId().equals("0"))
-                                .findAny()
-                                .orElseThrow());
-                    }
+                    turnResponses = generateTurn(battleship, turnResponses);
                 }
             }
 
@@ -126,5 +88,106 @@ public class BattleShipService {
         } else {
             throw new IllegalArgumentException("It's not your turn.");
         }
+    }
+
+    private static List<BattleshipTurnResponse> generateTurn(Battleship battleship, List<BattleshipTurnResponse> currentTurnResponses) {
+        List<BattleshipTurnResponse> turnResponses = new ArrayList<>(currentTurnResponses);
+        BattleshipField[][] board;
+        BattleshipField target;
+        Random random = new Random();
+
+        int targetX = random.nextInt(10);
+        int targetY = random.nextInt(10);
+
+        Map.Entry<Player, BattleshipField[][]> targetEntry = battleship.getPlayerBoards().entrySet().stream()
+                .filter(entry -> !entry.getKey().getId().equals(battleship.getCurrentTurn().getId()))
+                .findAny()
+                .orElseThrow();
+
+        board = targetEntry.getValue();
+
+        target = board[targetY][targetX];
+
+        if (target == BattleshipField.SHIP) {
+            board[targetY][targetX] = BattleshipField.HIT;
+            turnResponses.add(BattleshipTurnResponse.builder()
+                    .battleshipTurnRequest(BattleshipTurnRequest.builder()
+                            .targetPlayerId(targetEntry.getKey().getId())
+                            .x(targetX)
+                            .y(targetY)
+                            .build())
+                    .result(BattleshipField.HIT)
+                    .build());
+        } else if (target == BattleshipField.EMPTY) {
+            board[targetY][targetX] = BattleshipField.MISS;
+            turnResponses.add(BattleshipTurnResponse.builder()
+                    .battleshipTurnRequest(BattleshipTurnRequest.builder()
+                            .targetPlayerId(targetEntry.getKey().getId())
+                            .x(targetX)
+                            .y(targetY)
+                            .build())
+                    .result(BattleshipField.MISS)
+                    .build());
+            battleship.setCurrentTurn(battleship.getPlayerBoards().keySet().stream()
+                    .filter(p -> !p.getId().equals("0"))
+                    .findAny()
+                    .orElseThrow());
+        }
+
+        return turnResponses;
+    }
+
+    private BattleshipField[][] createRandomBoard() {
+        BattleshipField[][] board = new BattleshipField[BattleshipConfig.defaultConfig.getBoardSize()][BattleshipConfig.defaultConfig.getBoardSize()];
+        Random random = new Random();
+
+        for (int i = 0; i < BattleshipConfig.defaultConfig.getBoardSize(); i++) {
+            Arrays.fill(board[i], BattleshipField.EMPTY);
+        }
+
+        for (BattleshipShip battleshipShip : BattleshipConfig.defaultConfig.getAvailableShipsPerPlayer()) {
+            boolean placed = false;
+            while (!placed) {
+                int x = random.nextInt(BattleshipConfig.defaultConfig.getBoardSize());
+                int y = random.nextInt(BattleshipConfig.defaultConfig.getBoardSize());
+                boolean horizontal = random.nextBoolean();
+
+                if (horizontal) {
+                    if (x + battleshipShip.getLength() < BattleshipConfig.defaultConfig.getBoardSize()) {
+                        boolean free = true;
+                        for (int i = 0; i < battleshipShip.getLength(); i++) {
+                            if (board[y][x + i] != BattleshipField.EMPTY) {
+                                free = false;
+                                break;
+                            }
+                        }
+                        if (free) {
+                            for (int i = 0; i < battleshipShip.getLength(); i++) {
+                                board[y][x + i] = BattleshipField.SHIP;
+                            }
+                            placed = true;
+                        }
+                    }
+                } else {
+                    if (y + battleshipShip.getLength() < BattleshipConfig.defaultConfig.getBoardSize()) {
+                        boolean free = true;
+                        for (int i = 0; i < battleshipShip.getLength(); i++) {
+                            if (board[y + i][x] != BattleshipField.EMPTY) {
+                                free = false;
+                                break;
+                            }
+                        }
+                        if (free) {
+                            for (int i = 0; i < battleshipShip.getLength(); i++) {
+                                board[y + i][x] = BattleshipField.SHIP;
+                            }
+                            placed = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return board;
     }
 }
