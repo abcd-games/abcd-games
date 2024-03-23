@@ -1,6 +1,8 @@
 package com.github.abcdgames.backend.player;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class Player {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @Column(name = "display_name")
