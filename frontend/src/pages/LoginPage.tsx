@@ -6,6 +6,7 @@ type LoginPageProps = {
     login: (username: string, password: string) => void;
     loadingAppUser: boolean;
     appUser: AppUser | null;
+    loginWithGoogle: () => void;
 };
 
 export default function LoginPage(props: Readonly<LoginPageProps>) {
@@ -30,35 +31,41 @@ export default function LoginPage(props: Readonly<LoginPageProps>) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+        <>
+            <form onSubmit={handleSubmit}>
+                <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
 
-            <div className="form-floating">
-                <input
-                    type="text"
-                    className="form-control"
-                    id="floatingInput"
-                    autoComplete="username"
-                    name="username"
-                    value={username}
-                    onChange={handleChange}
-                />
-                <label htmlFor="floatingInput">Email address or Username</label>
-            </div>
-            <div className="form-floating">
-                <input
-                    type="password"
-                    className="form-control my-2"
-                    id="floatingPassword"
-                    autoComplete="current-password"
-                    name="password"
-                    value={password}
-                    onChange={handleChange}
-                />
-                <label htmlFor="floatingPassword">Password</label>
-            </div>
-            <button className="btn btn-primary w-100 py-2" type="submit">Sign in
+                <div className="form-floating">
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="floatingInput"
+                        autoComplete="username"
+                        name="username"
+                        value={username}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="floatingInput">Email address or Username</label>
+                </div>
+                <div className="form-floating">
+                    <input
+                        type="password"
+                        className="form-control my-2"
+                        id="floatingPassword"
+                        autoComplete="current-password"
+                        name="password"
+                        value={password}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="floatingPassword">Password</label>
+                </div>
+                <button className="btn btn-primary w-100 py-2" type="submit">Sign in
+                </button>
+            </form>
+            <button className="btn btn-primary w-100 py-2 my-2" onClick={props.loginWithGoogle} type={"button"}>Login
+                with
+                Google
             </button>
-        </form>
+        </>
     );
 }

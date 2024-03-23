@@ -36,6 +36,12 @@ export default function useAppUser() {
             .finally(() => setIsLoadingAppUser(false));
     }
 
+    function loginWithGoogle() {
+        const host = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin
+
+        window.open(host + '/oauth2/authorization/google', '_self')
+    }
+
     function logout() {
         setIsLoadingAppUser(true);
         axios.post(`${BASE_URI}/logout`)
@@ -69,5 +75,5 @@ export default function useAppUser() {
         }
     }, []);
 
-    return {appUser, loadingAppUser: isLoadingAppUser, login, register, logout};
+    return {appUser, loadingAppUser: isLoadingAppUser, login, register, logout, loginWithGoogle};
 }
