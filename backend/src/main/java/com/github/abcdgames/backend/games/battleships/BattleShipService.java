@@ -4,17 +4,29 @@ import com.github.abcdgames.backend.appuser.AppUser;
 import com.github.abcdgames.backend.games.battleships.model.*;
 import com.github.abcdgames.backend.player.Player;
 import com.github.abcdgames.backend.player.PlayerService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class BattleShipService {
 
     private final BattleshipRepository battleshipRepository;
     private final PlayerService playerService;
+    private final Random random = new Random();
+
+    @Autowired
+    public BattleShipService(BattleshipRepository battleshipRepository, PlayerService playerService) {
+        this.battleshipRepository = battleshipRepository;
+        this.playerService = playerService;
+    }
+
+    public BattleShipService(BattleshipRepository battleshipRepository, PlayerService playerService, long seed) {
+        this.battleshipRepository = battleshipRepository;
+        this.playerService = playerService;
+        this.random.setSeed(seed);
+    }
 
     public List<Battleship> findAll() {
         return battleshipRepository.findAll();
@@ -90,11 +102,10 @@ public class BattleShipService {
         }
     }
 
-    private static List<BattleshipTurnResponse> generateTurn(Battleship battleship, List<BattleshipTurnResponse> currentTurnResponses) {
+    private List<BattleshipTurnResponse> generateTurn(Battleship battleship, List<BattleshipTurnResponse> currentTurnResponses) {
         List<BattleshipTurnResponse> turnResponses = new ArrayList<>(currentTurnResponses);
         BattleshipField[][] board;
         BattleshipField target;
-        Random random = new Random();
 
         int targetX = random.nextInt(10);
         int targetY = random.nextInt(10);
@@ -139,7 +150,7 @@ public class BattleShipService {
 
     private BattleshipField[][] createRandomBoard() {
         BattleshipField[][] board = new BattleshipField[BattleshipConfig.defaultConfig.getBoardSize()][BattleshipConfig.defaultConfig.getBoardSize()];
-        Random random = new Random();
+
 
         for (int i = 0; i < BattleshipConfig.defaultConfig.getBoardSize(); i++) {
             Arrays.fill(board[i], BattleshipField.EMPTY);
