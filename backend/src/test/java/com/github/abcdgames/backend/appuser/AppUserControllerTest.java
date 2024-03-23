@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,6 +17,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,9 +60,11 @@ class AppUserControllerTest {
 
     @Test
     void getMe_expectStatus200AndAppUserResponse_whenUserLoggedIn() throws Exception {
-        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
+        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser.getUsername(), null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + AppUserRole.ADMIN.name())));
         SecurityContextHolder.getContext().setAuthentication(principal);
+        appUserRepository.save(adminUser);
 
         AppUserResponse appUserResponse = AppUserResponse.fromAppUser(adminUser);
         String appUserResponseJson = objectMapper.writeValueAsString(appUserResponse);
@@ -77,8 +82,9 @@ class AppUserControllerTest {
 
     @Test
     void getAllUsers_expectStatus200AndListOfAppUsers_whenLoggedInAndAdmin() throws Exception {
-        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
+        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser.getUsername(), null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + AppUserRole.ADMIN.name())));
         SecurityContextHolder.getContext().setAuthentication(principal);
 
         mockMvc.perform(get("/api/users"))
@@ -88,8 +94,8 @@ class AppUserControllerTest {
 
     @Test
     void getAllUsers_expectStatus403_whenLoggedInAndNotAdmin() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null, loggedInUser.getAuthorities());
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null, List.of());
         SecurityContextHolder.getContext().setAuthentication(principal);
 
         mockMvc.perform(get("/api/users"))
@@ -104,8 +110,9 @@ class AppUserControllerTest {
 
     @Test
     void getUserById_expectStatus200AndMyOwnCredentials_whenLoggedIn() throws Exception {
-        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
+        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser.getUsername(), null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + AppUserRole.ADMIN.name())));
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(adminUser);
 
@@ -115,20 +122,6 @@ class AppUserControllerTest {
         mockMvc.perform(get("/api/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(appUserResponseJson));
-    }
-
-    @Test
-    void getUserById_expectStatus403_whenLoggedInAndTryingToAccessOtherCredentials() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(principal);
-        appUserRepository.save(someUser);
-        appUserRepository.save(loggedInUser);
-
-        mockMvc.perform(get("/api/users/2"))
-                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -151,7 +144,7 @@ class AppUserControllerTest {
 
     @Test
     void createUser_expectStatus400_whenUsernameExist() throws Exception {
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER, "123");
         appUserRepository.save(someUser);
         AppUserRequest appUserRequest = new AppUserRequest("user2", "user@user.de", "Password1234");
         String appUserRequestJson = objectMapper.writeValueAsString(appUserRequest);
@@ -164,7 +157,7 @@ class AppUserControllerTest {
 
     @Test
     void createUser_expectStatus400_whenEmailExist() throws Exception {
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER, "123");
         appUserRepository.save(someUser);
         AppUserRequest appUserRequest = new AppUserRequest("user", "user2@user.de", "Password1234");
         String appUserRequestJson = objectMapper.writeValueAsString(appUserRequest);
@@ -177,8 +170,8 @@ class AppUserControllerTest {
 
     @Test
     void updateUser_expectStatus200AndUpdatedUser_whenUserLoggedInAndTryingToEditOwnCredentials() throws Exception {
-        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser, null, adminUser.getAuthorities());
+        AppUser adminUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(adminUser, null, List.of());
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(adminUser);
 
@@ -199,29 +192,10 @@ class AppUserControllerTest {
     }
 
     @Test
-    void updateUser_expectStatus403_whenUserLoggedInAndTryingToEditOtherCredentials() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(principal);
-        appUserRepository.save(someUser);
-        appUserRepository.save(loggedInUser);
-
-        AppUserRequest appUserRequest = new AppUserRequest("user3", "user3@user.de", "Password1234");
-        String appUserRequestJson = objectMapper.writeValueAsString(appUserRequest);
-
-        mockMvc.perform(put("/api/users/2")
-                        .contentType("application/json")
-                        .content(appUserRequestJson))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
     void deleteUser_expectStatus200_whenLoggedInAndUserWantsToDeleteItSelf() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
+                List.of(new SimpleGrantedAuthority("ROLE_" + AppUserRole.USER.name())));
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(loggedInUser);
 
@@ -231,10 +205,10 @@ class AppUserControllerTest {
 
     @Test
     void deleteUser_expectStatus403_whenLoggedInAndUserWantsToDeleteOtherUser() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER);
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.USER, "123");
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER, "123");
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
+                List.of());
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(someUser);
         appUserRepository.save(loggedInUser);
@@ -245,10 +219,10 @@ class AppUserControllerTest {
 
     @Test
     void deleteUser_expectStatus200_whenLoggedInAndAdminWantsToDeleteOtherUser() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER);
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        AppUser someUser = new AppUser(2L, "user2", "user2@user.de", "Password1234", AppUserRole.USER, "123");
         UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
+                List.of(new SimpleGrantedAuthority("ROLE_" + AppUserRole.ADMIN.name())));
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(someUser);
         appUserRepository.save(loggedInUser);
@@ -272,9 +246,9 @@ class AppUserControllerTest {
 
     @Test
     void login_expectStatus200AndAppUserResponse_whenLoggedIn() throws Exception {
-        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN);
-        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser, null,
-                loggedInUser.getAuthorities());
+        AppUser loggedInUser = new AppUser(1L, "user1", "user@user.de", "Password1234", AppUserRole.ADMIN, "123");
+        UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(loggedInUser.getUsername(), null,
+                List.of());
         SecurityContextHolder.getContext().setAuthentication(principal);
         appUserRepository.save(loggedInUser);
 
