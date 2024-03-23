@@ -54,6 +54,7 @@ class PlayerControllerTest {
     @WithMockUser(roles = "ADMIN")
     void getPlayerByIdReturnsCorrectPlayer() throws Exception {
         Player playerToSave = Player.builder()
+                .id("1")
                 .displayName("John Doe")
                 .build();
         Player expectedPlayer = playerRepository.save(playerToSave);
